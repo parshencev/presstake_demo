@@ -1,0 +1,20 @@
+{
+  "name": "banner-demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "gulpfile.js",
+  "scripts": {
+    "gulp": "gulp"
+  },
+  "author": "vlad",
+  "license": "ISC",
+  "devDependencies": {
+    "browser-sync": "^2.18.1",
+    "gulp": "^3.9.1",
+    "gulp-less": "^3.3.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^2.0.0",
+    "less-plugin-autoprefix": "^1.5.1",
+    "less-plugin-clean-css": "^1.5.1"
+  }
+}

@@ -71,7 +71,11 @@ var PRESSTAKE_BANNER_CORE = {
     // Время повторений репитеров
     repeatTimeout : 30000,
     // Количество повторений репитеров
-    repeatCounter : 3
+    repeatCounter : 3,
+    // включение, отключение записи ошибок
+    debag : true,
+    // листинг ошибок
+    debagList : []
   },
   // Хранение сгруппированных задач
   CONTROLLERS : {
@@ -430,11 +434,30 @@ var PRESSTAKE_BANNER_CORE = {
       loadingPageSuccess : function (response, intervalId) {
         // Объявляем конфигурации по умолчанию
         var config = PRESSTAKE_BANNER_CORE.CONFIG;
+        if (config.debag == true) {
+          var debagList = config.debagList;
+        }
         // Очистим интервал
-        clearInterval(intervalId);
+        if (intervalId) {
+          clearInterval(intervalId);  
+        } else if (debagList){
+          debagList.push("2");
+        }
         // Запишем конфигурации с сервера
-        config.pageID = response.page;
-        config.ovid = response.banId;
+        if (response) {
+          if (response.page) {
+            config.pageID = response.page;  
+          } else if (debagList){
+            debagList.push("3");
+          }
+          if (response.banId) {
+            config.ovid = response.banId;    
+          } else if (debagList){
+            debagList.push("4");
+          }
+        } else if (debagList) {
+          debagList.push("1");
+        }
         // Запишем что статус загрузки положительный
         config.pageStatus = 1;
         // Запустим загрузку офферов
@@ -448,26 +471,75 @@ var PRESSTAKE_BANNER_CORE = {
             url_builder_model = PRESSTAKE_BANNER_CORE.MODELS.URL_BUILDER_MODEL;
         // то запишем статус загрузки листинга как положительный
         config.appListStatus = 1;
+        if (config.debag == true) {
+          var debagList = config.debagList;
+        }
         // Очистим интервал
-        clearInterval(intervalId);
+        if (intervalId) {
+          clearInterval(intervalId);  
+        } else if (debagList){
+          debagList.push("5");
+        }
+        
         // Запишем в информацию оффера ссылку на него
-        response.data.map(function(item){
-          item.link = url_builder_model.getTrackingUrl({
-            clientID : config.clientID,
-            bannerID : config.bannerID,
-            pageID : config.pageID,
-            sitID : item.sitid,
-            id : item.id,
-            ovid : config.ovid,
-            URL : config.URL
-          });
-        });
+        if (response){
+          if (response.data){
+            response.data.map(function(item, itemKey){
+              if (debagList) {
+                if (!config.clientID) {
+                  debagList.push("8");
+                }
+                if (!config.bannerID) {
+                  debagList.push("9");
+                }
+                if (!config.pageID) {
+                  debagList.push("10");
+                }
+                if (!item.sitid) {
+                  debagList.push("11("+itemKey+")");
+                }
+                if (!config.ovid) {
+                  debagList.push("12");
+                }
+                if (!config.URL) {
+                  debagList.push("13");
+                }
+              }
+              item.link = url_builder_model.getTrackingUrl({
+                clientID : config.clientID,
+                bannerID : config.bannerID,
+                pageID : config.pageID,
+                sitID : item.sitid,
+                id : item.id,
+                ovid : config.ovid,
+                URL : config.URL
+              });
+            });
+          } else if (debagList) {
+            debagList.push("7");
+          }  
+        } else if (debagList){
+          debagList.push("6");
+        }
+        
         // Запишем ответ сервера в конфигурации
         config.appList = response;
         PRESSTAKE_BANNER_CORE.CONTROLLERS.INIT_CONTROLLER.init_content();
       },
       statBannerSuccess : function(response, intervalId){
-        clearInterval(intervalId);
+        var config = PRESSTAKE_BANNER_CORE.CONFIG,
+            debag = config.debag;
+        if (debag == true) {
+          var debagList = config.debagList;
+        }
+        if (intervalId) {
+          clearInterval(intervalId);  
+        } else if (debagList) {
+          debagList.push("14");
+        }
+        if (!response) {
+          debagList.push("15");
+        }
       }
     },
     // Модель методов для сборки путей с параметрами для запроса
@@ -475,182 +547,308 @@ var PRESSTAKE_BANNER_CORE = {
       // Функция для формирования пути к скачиванию css файла
       // Функция принимает конфигурации
       getCSSUrl : function (config){
-        // Если нет конфигураций то возвращаем отрицительный результат
+        // Если нет конфигураций то
         if (!config) {
-          return false;
-          // если есть то
-        } else {
-          // Склеиваем строку по свойствам конфигрураций
-          return config.URL.PROTOCOL + config.URL.TARGET_URL + config.URL.CSS_URL;
+          // объявляем конфигурации по умолчанию
+          var config = PRESSTAKE_BANNER_CORE.CONFIG;
         }
+        if (config.debag == true){
+          var debagList = config.debagList;
+        }
+        if (config.URL){
+          if (!config.URL.TARGET_URL && debagList){
+            debagList.push("17");
+          }
+          if (!config.URL.CSS_URL && debagList){
+            debagList.push("18");
+          }
+        } else if (debagList){
+          debagList.push("16");
+        }
+        // Склеиваем строку по свойствам конфигрураций и возвращаем её
+        return config.URL.PROTOCOL + config.URL.TARGET_URL + config.URL.CSS_URL;
       },
       // Функция для формирования пути для запроса на парсинг страницы
       // Функция принимает конфигурации
       getParseUrl : function (config) {
         // Если конфигураций нет, то
         if (!config) {
-          // Возвращает отрицательный результат
-          return false;
-          // если есть то
-        } else {
-          // Склеиваем строку по свойствам конфигрураций
-          var attributes = "?clid=" + encodeURIComponent(config.clientID)
-                           + '&bid=' + encodeURIComponent(config.bannerID)
-                           + '&loc=' + encodeURIComponent(config.location)
-                           + '&action=pgst';
-          // Возврощаем полноценную строку для запроса
-          return config.URL.PROTOCOL + config.URL.TARGET_URL + config.URL.PASRSE_URL + attributes;
+          // объявляем конфигурации по умолчанию
+          var config = PRESSTAKE_BANNER_CORE.CONFIG;
         }
+        if (config.debag == true){
+          var debagList = config.debagList;
+        }
+        if (!config.clientID && debagList){
+          debagList.push("19");
+        }
+        if (!config.bannerID && debagList){
+          debagList.push("20");
+        }
+        if (!config.location && debagList){
+          debagList.push("21");
+        }
+        // Склеиваем строку по свойствам конфигрураций
+        var attributes = "?clid=" + encodeURIComponent(config.clientID)
+                         + '&bid=' + encodeURIComponent(config.bannerID)
+                         + '&loc=' + encodeURIComponent(config.location)
+                         + '&action=pgst';
+        // Возврощаем полноценную строку для запроса
+        return config.URL.PROTOCOL + config.URL.TARGET_URL + config.URL.PASRSE_URL + attributes;
       },
       // Функция для формирования пути для запроса на отправсление статистики при показе банера
       // Функция принимает конфигурации
       getStatUrl_BannerVisible : function (config) {
-        // если конфигураций нет
+        // если конфигураций нет то
         if (!config) {
-          // Возвращает отрицательный результат
-          return false;
-          // Если есть то
-        } else {
-          // склеиваем строку по свойствам конфигураций
-          var attributes = "?clid=" + encodeURIComponent(config.clientID)
-                           + '&bid=' + encodeURIComponent(config.bannerID)
-                           + '&pgid=' + encodeURIComponent(config.pageID)
-                           + '&ovid=' + encodeURIComponent(config.ovid)
-                           + '&action=vis';
-          // возвращаем полноценную строку для запроса
-          return config.URL.PROTOCOL + config.URL.TARGET_URL + config.URL.STAT_URL + attributes;
+          var config = PRESSTAKE_BANNER_CORE.CONFIG;
         }
+        if (config.debag == true){
+          var debagList = config.debagList;
+        }
+        if (!config.clientID && debagList){
+          debagList.push("22");
+        }
+        if (!config.bannerID && debagList){
+          debagList.push("23");
+        }
+        if (!config.pageID && debagList){
+          debagList.push("24");
+        }
+        if (!config.ovid && debagList){
+          debagList.push("25");
+        }
+        // склеиваем строку по свойствам конфигураций
+        var attributes = "?clid=" + encodeURIComponent(config.clientID)
+                         + '&bid=' + encodeURIComponent(config.bannerID)
+                         + '&pgid=' + encodeURIComponent(config.pageID)
+                         + '&ovid=' + encodeURIComponent(config.ovid)
+                         + '&action=vis';
+        // возвращаем полноценную строку для запроса
+        return config.URL.PROTOCOL + config.URL.TARGET_URL + config.URL.STAT_URL + attributes;
       },
       // Функция для формирования пути для запроса на отправление статистики при открытии списка офферов
       // Функция принимаем конфигурации
       getStatUrl_BannerOpen : function (config) {
         // Если нет конфигураций
         if (!config) {
-          // Возвращаем отрицательный результат
-          return false;
-          // если есть то
-        } else {
-          // склеиваем строку по свойствам конфигураций
-          var attributes = "?clid=" + encodeURIComponent(config.clientID)
-                           + '&bid=' + encodeURIComponent(config.bannerID)
-                           + '&pgid=' + encodeURIComponent(config.pageID)
-                           + '&ovid=' + encodeURIComponent(config.ovid);
-          // Возвращаем полноценную строку для запроса
-          return config.URL.PROTOCOL + config.URL.TARGET_URL + config.URL.STAT_URL + attributes;
+          var config = PRESSTAKE_BANNER_CORE.CONFIG;
         }
+        if (config.debag == true) {
+          var debagList = config.debagList;
+        }
+        if (!config.clientID && debagList){
+          debagList.push("26");
+        }
+        if (!config.bannerID && debagList){
+          debagList.push("27");
+        }
+        if (!config.pageID && debagList){
+          debagList.push("28");
+        }    
+        if (!config.ovid && debagList){
+          debagList.push("29");
+        }    
+        // склеиваем строку по свойствам конфигураций
+        var attributes = "?clid=" + encodeURIComponent(config.clientID)
+                         + '&bid=' + encodeURIComponent(config.bannerID)
+                         + '&pgid=' + encodeURIComponent(config.pageID)
+                         + '&ovid=' + encodeURIComponent(config.ovid);
+        // Возвращаем полноценную строку для запроса
+        return config.URL.PROTOCOL + config.URL.TARGET_URL + config.URL.STAT_URL + attributes;
       },
       // Функция для формирования пути для запроса на отправление статистики при закрытии баннера
       // Функция принимает конфигурации
       getStatUrl_BannerUnvisible : function (config) {
-        // Если нет конфигураций
+        // Если нет конфигураций то
         if (!config) {
-          // Возвращаем отрицательный результат
-          return false;
-          // Если есто то
-        } else {
-          // Собираем строку по свойствам конфигураций
-          var attributes = "?clid=" + encodeURIComponent(config.clientID)
-                           + '&bid=' + encodeURIComponent(config.bannerID)
-                           + '&pgid=' + encodeURIComponent(config.pageID)
-                           + '&ovid=' + encodeURIComponent(config.ovid)
-                           + '&action=cl';
-          // Возвращаем полноценную строку для запроса
-          return config.URL.PROTOCOL + config.URL.TARGET_URL + config.URL.STAT_URL + attributes;
+          // Объявляем конфигурации по умолчанию
+          var config = PRESSTAKE_BANNER_CORE.CONFIG;
         }
+        if (config.debag) {
+          var debagList = config.debagList;
+        }
+        if (!config.clientID && debagList){
+          debagList.push("30");
+        }
+        if (!config.bannerID && debagList){
+          debagList.push("31");
+        }
+        if (!config.pageID && debagList){
+          debagList.push("32");
+        }
+        if (!config.ovid && debagList){
+          debagList.push("33");
+        }
+        // Собираем строку по свойствам конфигураций
+        var attributes = "?clid=" + encodeURIComponent(config.clientID)
+                         + '&bid=' + encodeURIComponent(config.bannerID)
+                         + '&pgid=' + encodeURIComponent(config.pageID)
+                         + '&ovid=' + encodeURIComponent(config.ovid)
+                         + '&action=cl';
+        // Возвращаем полноценную строку для запроса
+        return config.URL.PROTOCOL + config.URL.TARGET_URL + config.URL.STAT_URL + attributes;
       },
       // Функция для формирования пути для получения ссылок офферов
       // Функция принимает конфигурации
       getTrackingUrl : function (config) {
-        // Если нет конфигураций
+        // Если нет конфигураций то
         if (!config) {
-          // Возвращаем отрицательный результат
-          return false;
-          // Если есть то
-        } else {
-          // склеиваем строку по свойствам конфигураций
-          var attributes = "?clid=" + encodeURIComponent(config.clientID)
-                           + '&bid=' + encodeURIComponent(config.bannerID)
-                           + '&pgid=' + encodeURIComponent(config.pageID)
-                           + '&item=' + encodeURIComponent(config.sitID)
-                           + '&ovid=' + encodeURIComponent(config.ovid);
-          // Возвращаем полноценную строку для запроса
-          return config.URL.PROTOCOL + config.URL.TARGET_URL + config.URL.TRACKING_URL + attributes;
+          // объявляем конфигурации по умолчанию
+          var config = PRESSTAKE_BANNER_CORE.CONFIG;
         }
+        if (config.debag == true){
+          var debagList = config.debagList;
+        }
+        if (!config.clientID && debagList){
+          debagList.push("34");
+        }
+        if (!config.bannerID && debagList){
+          debagList.push("35");
+        }
+        if (!config.pageID && debagList){
+          debagList.push("36");
+        }
+        if (!config.sitID && debagList){
+          debagList.push("37");
+        }
+        if (!config.ovid && debagList){
+          debagList.push("38");
+        }
+        // склеиваем строку по свойствам конфигураций
+        var attributes = "?clid=" + encodeURIComponent(config.clientID)
+                         + '&bid=' + encodeURIComponent(config.bannerID)
+                         + '&pgid=' + encodeURIComponent(config.pageID)
+                         + '&item=' + encodeURIComponent(config.sitID)
+                         + '&ovid=' + encodeURIComponent(config.ovid);
+        // Возвращаем полноценную строку для запроса
+        return config.URL.PROTOCOL + config.URL.TARGET_URL + config.URL.TRACKING_URL + attributes;
       },
       // Функция для формирования пути для запроса обработки страницы
       // Функция принимает конфигурации
       getCheckLoadingUrl : function (config) {
-        // если нет конфигураций
+        // если нет конфигураций то
         if (!config) {
-          // Возвращаем отрицательный результат
-          return false;
-          // Если есть то
-        } else {
-          // Склеиваем строку по свойствам конфигураций
-          var attributes = "?clid=" + encodeURIComponent(config.clientID)
-                           + '&bid=' + encodeURIComponent(config.bannerID)
-                           + '&loc' + encodeURIComponent(config.location)
-                           + '&action=pgst';
-          // Возвращаем полноценную строку для запроса
-          return config.URL.PROTOCOL + config.URL.TARGET_URL + config.URL.PASRSE_URL + attributes;
+          // объявляем конфигурации по умолчанию
+          var config = PRESSTAKE_BANNER_CORE.CONFIG;
         }
+        if (config.debag == true){
+          var debagList = config.debagList;
+        }
+        if (!config.clientID && debagList){
+          debagList.push("39");
+        }
+        if (!config.bannerID && debagList){
+          debagList.push("40");
+        }
+        if (!config.location && debagList){
+          debagList.push("41");
+        }
+        // Склеиваем строку по свойствам конфигураций
+        var attributes = "?clid=" + encodeURIComponent(config.clientID)
+                         + '&bid=' + encodeURIComponent(config.bannerID)
+                         + '&loc=' + encodeURIComponent(config.location)
+                         + '&action=pgst';
+        // Возвращаем полноценную строку для запроса
+        return config.URL.PROTOCOL + config.URL.TARGET_URL + config.URL.PASRSE_URL + attributes;
       },
       // Функция для формирования пути для запроса загрузки листинга офферов
       // Функция принимает конфигурации
       getLoadListUrl : function (config) {
-        // Если нет конфигураций
+        // Если нет конфигураций то
         if (!config) {
-          // Возвращаем отрицательный результат
-          return false;
-          // Если есть то
-        } else {
-          // Склеиваем строку по свойствам конфигураций
-          var attributes = "?clid=" + encodeURIComponent(config.clientID)
-                           + '&bid=' + encodeURIComponent(config.bannerID)
-                           + '&pgid=' + encodeURIComponent(config.pageID)
-                           + '&os=' + encodeURIComponent(config.clientOS)
-                           + '&banid=' + encodeURIComponent(config.ovid);
-          // Возвращаем полноценную строку дял запроса
-          return config.URL.PROTOCOL + config.URL.TARGET_URL + config.URL.APPS_URL + attributes;
+          // объявляем конфигурации по умолчанию
+          var config = PRESSTAKE_BANNER_CORE.CONFIG;
         }
+        if (config.debag == true) {
+          var debagList = config.debagList;
+        }
+        if (!config.clientID && debagList){
+          debagList.push("42");
+        }
+        if (!config.bannerID && debagList){
+          debagList.push("43");
+        }
+        if (!config.pageID && debagList){
+          debagList.push("44");
+        }
+        if (!config.clientOS && debagList){
+          debagList.push("45");
+        }
+        if (!config.ovid && debagList){
+          debagList.push("46");
+        }
+        // Склеиваем строку по свойствам конфигураций
+        var attributes = "?clid=" + encodeURIComponent(config.clientID)
+                         + '&bid=' + encodeURIComponent(config.bannerID)
+                         + '&pgid=' + encodeURIComponent(config.pageID)
+                         + '&os=' + encodeURIComponent(config.clientOS)
+                         + '&banid=' + encodeURIComponent(config.ovid);
+        // Возвращаем полноценную строку дял запроса
+        return config.URL.PROTOCOL + config.URL.TARGET_URL + config.URL.APPS_URL + attributes;
       },
       // Функция для формирования пути для регистрации пользователя
       // Функция принимает конфигурации
       getSubscribeUrl : function (config) {
         // Если нет конфигураций
         if (!config) {
-          // Фозвращаем отрицательный результат
-          return false;
-          // Если есть то
-        } else {
-          // Склеиваем строку по свойствам конфигураций
-          var attributes = "?id=" + encodeURIComponent(config.ID)
-                           + '&banid=' + encodeURIComponent(config.ovid)
-                           + '&email=' + encodeURIComponent(config.email)
-                           + '&os=' + encodeURIComponent(config.clientOS)
-                           + '&action=sb';
-          // Возвращаем полноценную строку для запроса
-          return config.URL.PROTOCOL + config.URL.TARGET_URL + config.URL.SUBSCRIBE_URL + attributes;
+          var config = PRESSTAKE_BANNER_CORE.CONFIG;
         }
+        if (config.debag == true){
+          var debagList = config.debagList;
+        }
+        if (!config.ID && debagList){
+          debagList.push("47");
+        }
+        if (!config.ovid && debagList){
+          debagList.push("48");
+        }
+        if (!config.email && debagList){
+          debagList.push("49");
+        }
+        if (!config.clientOS && debagList){
+          debagList.push("50");
+        }
+        // Склеиваем строку по свойствам конфигураций
+        var attributes = "?id=" + encodeURIComponent(config.ID)
+                         + '&banid=' + encodeURIComponent(config.ovid)
+                         + '&email=' + encodeURIComponent(config.email)
+                         + '&os=' + encodeURIComponent(config.clientOS)
+                         + '&action=sb';
+        // Возвращаем полноценную строку для запроса
+        return config.URL.PROTOCOL + config.URL.TARGET_URL + config.URL.SUBSCRIBE_URL + attributes;
       },
       // Функция для формирования пути для отписки пользователя
       // Функция принимает конфигурации
       getUnsubscribeUrl : function (config) {
         // Если нет конфигураций то
         if (!config) {
-          // Возвращаем отрицательный результат
-          return false;
-          // Если есть то
-        } else {
-          // Склеиваем строку по свойствам конфигураций
-          var attributes = "?id=" + encodeURIComponent(config.ID)
-                           + '&banid=' + encodeURIComponent(config.ovid)
-                           + '&email=' + encodeURIComponent(config.email)
-                           + '&os=' + encodeURIComponent(config.clientOS)
-                           + '&action=unsb';
-          // Возвращаем полноценную строку для запроса
-          return config.URL.PROTOCOL + config.URL.TARGET_URL + config.URL.SUBSCRIBE_URL + attributes;
+          // объявляем конфигурации по умолчанию
+          var config = PRESSTAKE_BANNER_CORE.CONFIG;
         }
+        if (config.debag == true){
+          var debagList = config.debagList;
+        }
+        if (!config.ID && debagList){
+          debagList.push("51");
+        }
+        if (!config.ovid && debagList){
+          debagList.push("52");
+        }
+        if (!config.email && debagList){
+          debagList.push("53");
+        }
+        if (!config.clientOS && debagList){
+          debagList.push("54");
+        }
+        // Склеиваем строку по свойствам конфигураций
+        var attributes = "?id=" + encodeURIComponent(config.ID)
+                         + '&banid=' + encodeURIComponent(config.ovid)
+                         + '&email=' + encodeURIComponent(config.email)
+                         + '&os=' + encodeURIComponent(config.clientOS)
+                         + '&action=unsb';
+        // Возвращаем полноценную строку для запроса
+        return config.URL.PROTOCOL + config.URL.TARGET_URL + config.URL.SUBSCRIBE_URL + attributes;
       }
     },
     // модель методов для ассихронной связи с сервером
@@ -661,6 +859,24 @@ var PRESSTAKE_BANNER_CORE = {
         // Создание объекта соединения и объявляем конфигурации
         var request = new XMLHttpRequest(),
             config = PRESSTAKE_BANNER_CORE.CONFIG;
+        if (config.debag == true){
+          var debagList = config.debagList;
+        }
+        if (!request && debagList) {
+          debagList.push("55");
+        }
+        if (!url && debagList) {
+          debagList.push("57");
+        }
+        if (!callback && debagList){
+          debagList.push("58");
+        }
+        if (!callbackError && debagList){
+          debagList.push("59");
+        }
+        if (!intervalId && debagList){
+          debagList.push("60");
+        }
         // Вызод метода для установки соединения по переданному пути
         request.open('GET', url, true);
         // События которые должны вызываться во время соединения
@@ -670,6 +886,9 @@ var PRESSTAKE_BANNER_CORE = {
           if (request.status == 200 && callback) {
             // Преобразуем в JSON ответ сервера
             var response = JSON.parse(request.responseText);
+            if (!response && debagList) {
+              debagList.push("56");
+            }
             // Проверяем есть ли в ответе сервера свойство статуса
             if (response.hasOwnProperty("status")) {
               // Если есть то проверяем положительно ли оно
@@ -698,6 +917,22 @@ var PRESSTAKE_BANNER_CORE = {
       // Функция повторения запроса
       // Функция принимает конфигурации, функцию для ассихронной связи, путь с параметрами запроса, функцию при удачном соединении и не удачном
       repeater : function (config, ajax_function, url, callback, callbackError) {
+        var debag = config.debag || PRESSTAKE_BANNER_CORE.CONFIG.debag;
+        if (debag == true){
+          var debagList = config.debagList || PRESSTAKE_BANNER_CORE.CONFIG.debagList;
+        }
+        if (!ajax_function && debagList){
+          debagList.push("61");
+        }
+        if (!callback && debagList){
+          debagList.push("62");
+        }
+        if (!callbackError && debagList){
+          debagList.push("63");
+        }
+        if (!url && debagList){
+          debagList.push("64");
+        }
         // Объявляем интервал, запускаем его и записываем его индентификатор
         var intervalId = setInterval((function(){
           // Если в области видимости нет свойства tick то
@@ -708,6 +943,21 @@ var PRESSTAKE_BANNER_CORE = {
           } else {
             // Прибавляем к нему 1
             this.tick ++;
+          }
+          if (!config.repeatCounter && debagList) {
+            debagList.push("65("+intervalId+", "+tick+")");
+          }
+          if (!url && debagList) {
+            debagList.push("66("+intervalId+", "+tick+")");
+          }
+          if (!callback && debagList) {
+            debagList.push("67("+intervalId+", "+tick+")");
+          }
+          if (!callbackError && debagList) {
+            debagList.push("68("+intervalId+", "+tick+")");
+          }
+          if (!config.repeatTimeout && debagList){
+            debagList.push("69("+intervalId+", "+tick+")"); 
           }
           // Вызываем ассихронную функцию и передаём в неё путь, удачную функцию, неудачную, идентификатор интервала
           ajax_function(url, callback, callbackError, intervalId);
@@ -727,7 +977,14 @@ var PRESSTAKE_BANNER_CORE = {
       // Определение протокола клиента
       getProtocol : function (){
         // Запись протокола клиента
-        var protocol = document.location.protocol;
+        var protocol = document.location.protocol,
+            config = PRESSTAKE_BANNER_CORE.CONFIG;
+        if (config.debag == true) {
+          var debagList = config.debagList;
+        }
+        if (!protocol && debagList){
+          debagList.push("70");
+        }
         // Если протокол защищённый то возвращаем https:// если нет то http://
         if ('https:' === protocol) {
           return "https://";
@@ -738,7 +995,14 @@ var PRESSTAKE_BANNER_CORE = {
       // Получение операционной системы клиента
       getClientOS : function () {
         // Получение строки с иформацией об аппаратуре и програмном обеспечении клиента
-        var userAgent = navigator.userAgent;
+        var userAgent = navigator.userAgent,
+            config = PRESSTAKE_BANNER_CORE.CONFIG;
+        if (config.debag == true){
+          var debagList = config.debagList;
+        }
+        if (!userAgent && debagList){
+          debagList.push("71");
+        }
         // Если поиск по регулярному выродению выполнен успешно (есть вхождения)
         if (userAgent.match(/Android/i)) {
           // То возвращаем что это Android
@@ -754,20 +1018,33 @@ var PRESSTAKE_BANNER_CORE = {
       },
       // Получение кофиогураций из атребутов HTML узлов, функция принимает в себя объект конфигураций
       getDOMConfig : function (config) {
-        // Если нет объекта конфигураций или если он есть но нет свойства хранящее ID HTML узла загрусчика, то
-        if (!config || !config.loaderID) {
-          // Возвращаем отрецательный результат
-          return false;
-          // Иначе выполняем следующий код
-        } else {
-          // Записываем переменную - дискриптор на HTML узер загрузчика по идентификатору из конфигураций
-          var loaderDOM = document.getElementById(config.loaderID);
-          // Записываем в конфигурации атребуты HTML узла : номер баннера и номер клиента
-          config.bannerID = loaderDOM.getAttribute("data-bid");
-          config.clientID = loaderDOM.getAttribute("data-clid");
-          // Возвращаем положительный результат
-          return true;
+        // Если нет объекта конфигураций то
+        if (!config) {
+          // объявляем конфигурации по умолчанию
+          var config = PRESSTAKE_BANNER_CORE.CONFIG;
         }
+        if (config.debag == true){
+          var debagList = config.debagList;
+        }
+        if (!config.loaderID && debagList) {
+          debagList.push("72");
+        }
+        // Записываем переменную - дискриптор на HTML узер загрузчика по идентификатору из конфигураций
+        var loaderDOM = document.getElementById(config.loaderID);
+        if(!loaderDOM && debagList) {
+          debagList.push("73");
+        }
+        if (!loaderDOM.getAttribute("data-bid") && debagList){
+          debagList.push("74");
+        }
+        if (!loaderDOM.getAttribute("data-clid") && debagList){
+          debagList.push("75");
+        } 
+        // Записываем в конфигурации атребуты HTML узла : номер баннера и номер клиента
+        config.bannerID = loaderDOM.getAttribute("data-bid");
+        config.clientID = loaderDOM.getAttribute("data-clid");
+        // Возвращаем положительный результат
+        return true;
       },
       // Функция для получения скролла клиента
       getScroll : function () {
@@ -777,6 +1054,18 @@ var PRESSTAKE_BANNER_CORE = {
             clientHeight = Math.max(document.documentElement.clientHeight, document.body.clientHeight),
             scrollHeight = document.documentElement.scrollHeight,
             scroll = (windowScrollTop * 100) / clientHeight;
+        if (config.debag == true){
+          var debagList = config.debagList;
+        }
+        if (!windowScrollTop && debagList){
+          debagList.push("76");
+        }
+        if (!clientHeight && debagList){
+          debagList.push("77");
+        }
+        if (!scrollHeight && debagList){
+          debagList.push("78");
+        }
         // Если процент скролла равен 0 и высота скролла меньше или равна высоте окна
         if (scroll == 0 && scrollHeight <= window.innerHeight){
           // То процент скролла равен 100
@@ -790,6 +1079,12 @@ var PRESSTAKE_BANNER_CORE = {
         // бъявляем конфигурации и ширину окна клиента
         var config = PRESSTAKE_BANNER_CORE.CONFIG,
             width = window.innerWidth;
+        if (config.debag == true){
+          var debagList = config.debagList;
+        }
+        if (!width && debagList){
+          debagList.push("79");
+        }
         // Записываем зум для баннера в конфигурации
         config.zoom = width / 700;
       },
@@ -799,6 +1094,15 @@ var PRESSTAKE_BANNER_CORE = {
         var config = PRESSTAKE_BANNER_CORE.CONFIG,
             clientWidth = document.documentElement.clientWidth,
             scrollLeft = window.scrollX;
+        if (config.debag == true){
+          var debagList = config.debagList;
+        }
+        if (!clientWidth && debagList){
+          debagList.push("80");
+        }
+        if (!scrollLeft && debagList){
+          debagList.push("81");
+        }
         // Записываем процент отступа от левого края для баннера
         config.bannerLeft = (scrollLeft * 100) / clientWidth;
       },
@@ -822,6 +1126,9 @@ var PRESSTAKE_BANNER_CORE = {
         if (!config) {
           // Объявляются стандартные конфигурации
           var config = PRESSTAKE_BANNER_CORE.CONFIG;
+        }
+        if (config.debag){
+          var debagList = config.debagList;
         }
         // Обявляем объект - ответ сервера на загрузку листинга офферов
         var response = config.appList,
@@ -858,10 +1165,19 @@ var PRESSTAKE_BANNER_CORE = {
             // создаём html узел для цветного текста в нижнем тексте главной области
             banner_main_text_bottom_colored = document.createElement("a");
 
+        if (!response && debagList){
+          debagList.push("82");
+        }
+
         // добавляем класс к контейнеру баннера
         banner.classList.add("pt-banner");
         // добавляеам идентификатор для контейнера баннера
         banner.id = config.bannerSpaceID;
+
+        if (!config.bannerSpaceID && debagList){
+          debagList.push("83");
+        }
+
         // Добавляем класс для главной области баннера
         banner_main.classList.add("pt-banner-main");
         // Добавляем идентификатор для главной области баннера
@@ -901,6 +1217,13 @@ var PRESSTAKE_BANNER_CORE = {
 
         // Добавляем класс для контейнера баннера из конфигураций
         banner.classList.add(config.bannerClasses[response.templateType]);
+
+        if (!config.bannerClasses && debagList){
+          debagList.push("84");
+        }
+        if(!response.templateType && debagList){
+          debagList.push("85");
+        }
 
         // добавляем текстовый узел для верхнего текста главной области баннера
         banner_main_text_top.innerHTML = "Лучшие цены в он-лайн магазинах";
@@ -943,8 +1266,12 @@ var PRESSTAKE_BANNER_CORE = {
         // Добавляем в главную область баннера крестик
         banner_main.appendChild(banner_main_close);
 
+        if (!response.data && debagList){
+          debagList.push("86");
+        }
+
         // Объявляем цыкл по количеству офферов из ответа сервера каджый оффер будет как переменная item
-        response.data.map(function(item){
+        response.data.map(function(item, itemKey){
           // объявляем html узел для ячейки оффера
           var banner_list_scroll_list_item = document.createElement("div"),
               // объявляем html узел для контейнера картинки в ячейке оффера
@@ -964,6 +1291,11 @@ var PRESSTAKE_BANNER_CORE = {
           banner_list_scroll_list_item.classList.add("pt-banner-list-item");
           // Добавляем класс для контейнера картинки оффера
           banner_list_scroll_list_item_image.classList.add("pt-banner-list-image-wrapper");
+
+          if (!item.link && debagList) {
+            debagList.push("87("+itemKey+")");
+          }
+
           // Добавляем url аттребут для контейнера картинки оффера
           banner_list_scroll_list_item_image.href = item.link;
           // Добавляем класс для картинки оффера
@@ -976,6 +1308,10 @@ var PRESSTAKE_BANNER_CORE = {
           banner_list_scroll_list_item_price.classList.add("pt-banner-item-price");
           // Добавляем класс для ссылки - кнопки оффера
           banner_list_scroll_list_item_button.classList.add("pt-banner-item-shop_button");
+
+          if (!item.itarget && debagList){
+            debagList.push("88("+itemKey+")");
+          }
 
           // Если платформа оффера для гугл плей то
           if (item.itarget.google_play == 1){
@@ -991,6 +1327,10 @@ var PRESSTAKE_BANNER_CORE = {
             banner_list_scroll_list_item_button.innerHTML = "В магазин";
           }
 
+          if (!item.image && debagList){
+            debagList.push("89("+itemKey+")");
+          }
+
           // добавляем url ттребут для картинки оффера
           banner_list_scroll_list_item_image_img.src = item.image;
           // добавляем альтернативный текст для картинки
@@ -999,16 +1339,35 @@ var PRESSTAKE_BANNER_CORE = {
           banner_list_scroll_list_item_link.href = item.link;
           // добавляем текстовый узел для ссылки на оффер, который состоит из корневого каталога оффера
           //banner_list_scroll_list_item_link.innerHTML = item.link.match(/[aA-zZ]*\.[aA-zZ]*/);
+
+          if (!item.linkName && debagList){
+            debagList.push("90("+itemKey+")");
+          }
+
           banner_list_scroll_list_item_link.innerHTML = item.linkName;
           // добавляем текстовый узел для заголовка оффера
+
+          if (!item.name && debagList){
+            debagList.push("91("+itemKey+")");
+          }
+
           banner_list_scroll_list_item_title.innerHTML = item.name;
           // добавляем текстовый узел для цены оффера
+
+          if (!item.price && debagList){
+            debagList.push("92("+itemKey+")");
+          }
+
           banner_list_scroll_list_item_price.innerHTML = item.price;
           // добавляем url атрребут для ссылки - кнопки на оффер
           banner_list_scroll_list_item_button.href = item.link;
 
           // Добавляем в контейнер картинки картинку оффера
           banner_list_scroll_list_item_image.appendChild(banner_list_scroll_list_item_image_img);
+
+          if (!item.hasOwnProperty("alternativeText") && debagList){
+            debagList.push("93("+itemKey+")");
+          }
 
           // Если есть альтернативный текст оффера то
           if (item.hasOwnProperty("alternativeText")) {
@@ -1027,6 +1386,13 @@ var PRESSTAKE_BANNER_CORE = {
             banner_list_scroll_list_item_alternative_top.classList.add("pt-banner-alternative_text-top");
             // добавление класса для нижнего альтернативного текста
             banner_list_scroll_list_item_alternative_bottom.classList.add("pt-banner-alternative_text-bottom");
+
+            if (!item.alternativeText.top && debagList){
+              debagList.push("94("+itemKey+")");
+            }
+            if (!item.alternativeText.bottom && debagList){
+              debagList.push("95("+itemKey+")"); 
+            }
 
             // добавление текстового узла для верхенего альтернативного текста из ответа сервера
             banner_list_scroll_list_item_alternative_top.innerHTML = item.alternativeText.top;
@@ -1047,6 +1413,10 @@ var PRESSTAKE_BANNER_CORE = {
           banner_list_scroll_list_item.appendChild(banner_list_scroll_list_item_link);
           // добавление в ячейку оффера заголовка
           banner_list_scroll_list_item.appendChild(banner_list_scroll_list_item_title);
+
+          if (!item.hasOwnProperty("description") && debagList){
+            debagList.push("96("+itemKey+")");
+          }
 
           // Если есть описание оффера то
           if (item.hasOwnProperty("description")) {
@@ -1111,8 +1481,13 @@ var PRESSTAKE_BANNER_CORE = {
           banner_list_header_selector_description.innerHTML = "Актуально для ";
           // добавление текстового узла для вступления ресурса
           banner_list_header_source_before.innerHTML = "По данным";
+
+          if (!response.shipperName && debagList){
+            debagList.push("97");
+          }
+
           // добавление текстового узла для ресурса
-          banner_list_header_source_after.innerHTML = "Яндекс.Маркет";
+          banner_list_header_source_after.innerHTML = response.shipperName;
 
           // объявляем html узел для опции селектора по умолчанию
           var banner_list_header_selector_selector_option = document.createElement("option");
@@ -1120,17 +1495,33 @@ var PRESSTAKE_BANNER_CORE = {
           banner_list_header_selector_selector_option.classList.add("pt-banner-list-header-selector-option");
           // Добавляем атребут для отображения по умолчанию
           banner_list_header_selector_selector_option.setAttribute("selected", "");
+
+          if (!response.geo.name && debagList){
+            debagList.push("98");
+          }
+
           // Добавляем название города
           banner_list_header_selector_selector_option.innerHTML = response.geo.name;
           // Добавляем опцию в селект
           banner_list_header_selector_selector.appendChild(banner_list_header_selector_selector_option);
 
+          if (!response.hasOwnProperty("cities") && debagList){
+            debagList.push("99");
+          }
+
           // Если есть список городов в ответе сервера то
           if(response.hasOwnProperty("cities")){
             // Объявляем цыкл до количества городов в ответе сервера
-            response.cities.map(function(city){
+            response.cities.map(function(city, cityKey){
               // объявляем html узел для опции селектора
               var banner_list_header_selector_selector_option = document.createElement("option");
+
+              if (!city.id && debagList){
+                debagList.push("100("+cityKey+")");
+              }
+              if (!city.name && debagList){
+                debagList.push("101("+cityKey+")"); 
+              }
 
               // Добовляем класс для опции селектора
               banner_list_header_selector_selector_option.classList.add("pt-banner-list-header-selector-option");
@@ -1175,10 +1566,18 @@ var PRESSTAKE_BANNER_CORE = {
       createCss : function(url){
         // Объявляется тег стилей и шапка страницы
         var css = document.createElement("link"),
-            head = document.head;
+            head = document.head,
+            config = PRESSTAKE_BANNER_CORE.CONFIG;
+
+        if (config.debag == true){
+          var debagList = config.debagList;
+        }
         // Добавляем свойство указания на стилевой файл к тегу стилей
         css.rel = "stylesheet";
         // Добавляет свойство для обозначения пути до стилевого файла и приравниваем путь полученый при вызове
+        if (!url && debagList){
+          debagList.push("102");
+        }
         css.href = url;
         // Добавляем в шапку страницы тег для стилей
         head.appendChild(css);
@@ -1190,6 +1589,12 @@ var PRESSTAKE_BANNER_CORE = {
         if(!config) {
           // Объявляем конфигурации равными по умолчанию
           var config = PRESSTAKE_BANNER_CORE.CONFIG;
+        }
+        if (config.debag == true){
+          var debagList = config.debagList;
+        }
+        if (!config.bannerSpaceID && debagList){
+          debagList.push("103");
         }
         // Объявляем html узел баннера
         var banner = document.getElementById(config.bannerSpaceID);
@@ -1206,6 +1611,12 @@ var PRESSTAKE_BANNER_CORE = {
           // Объявляем конфигурации равными по умолчанию
           var config = PRESSTAKE_BANNER_CORE.CONFIG;
         }
+        if (config.debag == true){
+          var debagList = config.debagList;
+        }
+        if (!config.bannerSpaceID && debagList){
+          debagList.push("104");
+        }
         // Объявляем html узел баннера
         var banner = document.getElementById(config.bannerSpaceID);
         // Удаляем из html узела баннера класс для открытия баннера
@@ -1220,6 +1631,12 @@ var PRESSTAKE_BANNER_CORE = {
         if(!config){
           // Объявляем конфигурации равными по умолчанию
           var config = PRESSTAKE_BANNER_CORE.CONFIG;
+        }
+        if (config.debag == true){
+          var debagList = config.debagList;
+        }
+        if (!config.bannerSpaceID && debagList){
+          debagList.push("105");
         }
         // Объявляем html узел баннера
         var banner = document.getElementById(config.bannerSpaceID);
@@ -1237,6 +1654,12 @@ var PRESSTAKE_BANNER_CORE = {
           // Объявляем конфигурации по умолчанию
           var config = PRESSTAKE_BANNER_CORE.CONFIG;
         }
+        if (config.debag == true){
+          var debagList = config.debagList;
+        }
+        if (!config.bannerSpaceID && debagList){
+          debagList.push("106");
+        }
         // Объявляем html узел баннера
         var banner = document.getElementById(config.bannerSpaceID);
         // Удаляем из него класс для открытия списка офферов
@@ -1251,6 +1674,15 @@ var PRESSTAKE_BANNER_CORE = {
           // Объявляем конфигурации равными по усмолчанию
           var config = PRESSTAKE_BANNER_CORE.CONFIG;
         }
+        if (config.debag == true){
+          var debagList = config.debagList;
+        }
+        if (!config.scroll && debagList){
+          debagList.push("107");
+        }
+        if (!config.clientOS && debagList){
+          debagList.push("108");
+        }
         // если скролл страницы больше 25 процентов и операционная система клиента не в составе категории другие то
         if (config.scroll > 25 && config.clientOS != "other") {
           // Вызываем функцию открытия баннера
@@ -1263,6 +1695,18 @@ var PRESSTAKE_BANNER_CORE = {
         // Объявляются конфигурации и html узел баннера
         var config = PRESSTAKE_BANNER_CORE.CONFIG,
             banner = document.getElementById(config.bannerSpaceID);
+        if (config.debag) {
+          var debagList = config.debagList;
+        }
+        if (!config.zoom && debagList){
+          debagList.push("109");
+        }
+        if (!config.left && debagList){
+          debagList.push("110");
+        }
+        if (!config.bottom && debagList){
+          debagList.push("111");
+        }
         // Добавление зума в стили баннера из конфигураций
         banner.style.zoom = config.zoom;
         // Добавление отступа слева в стили баннера из конфигураций + %
@@ -1273,10 +1717,23 @@ var PRESSTAKE_BANNER_CORE = {
       // Функция для открытия листинга офферов при клике на главную область баннера
       // Функция принимает событие
       bannerMainClickFirstEvent : function (event) {
+        var config = PRESSTAKE_BANNER_CORE.CONFIG;
+        if (config.debag == true){
+          var debagList = config.debagList;
+        }
         // Корректировка события если необходимо
         event = event || window.event;
+        if (!event && debagList){
+          debagList.push("112");
+        }
         // Объявление DOM объекта события
         var target = event.target || event.srcElement;
+        if (!target && debagList){
+          debagList.push("113");
+        }
+        if (!target.id && debagList){
+          debagList.push("114");
+        }
         // Если у DOM объекта нет идентификатора или идентификатор не равен кнопке закрытия то
         if (!target.id || target.id != "pt-banner-close_banner") {
           // Открывает листинг офферов
@@ -1285,10 +1742,20 @@ var PRESSTAKE_BANNER_CORE = {
       },
       // Функция для закрытия листинга офферов при клике на главную облать баннера
       bannerMainClickSecondEvent : function (event){
+        var config = PRESSTAKE_BANNER_CORE.CONFIG;
+        if(config.debag == true){
+          var debagList = config.debagList;
+        }
         // Корректировака события если нужно
         event = event || window.event;
         // Объявление DOM бъекта события
         var target = event.target || event.srcElement;
+        if (!target && debagList){
+          debagList.push("115");
+        }
+        if (!target.id && debagList){
+          debagList.push("116");
+        }
         // Если у DOM объекта события нет идентификатора или идентификатор не равен кнопке закрытия то
         if (!target.id || target.id != "pt-banner-close_banner") {
           // Закрываем листинг офферов
@@ -1308,12 +1775,26 @@ var PRESSTAKE_BANNER_CORE = {
       // Функция для добавления события на скролл
       // Функция принимает событие
       addWindowScrollEvent : function(action){
+        var config = PRESSTAKE_BANNER_CORE.CONFIG;
+        if (config.debag == true){
+          var debagList = config.debagList;
+        }
+        if (!action && debagList){
+          debagList.push("117");
+        }
         // Добавление события на скролл
         window.addEventListener("scroll", action);
       },
       // Функция для добавления события на зумирование окна
       // Функция принимает событие
       addWindowZoomEvent : function(action){
+        var config = PRESSTAKE_BANNER_CORE.CONFIG;
+        if (config.debag == true){
+          var debagList = config.debagList;
+        }
+        if (!action && debagList){
+          debagList.push("118");
+        }
         // Добавление события на масштабирование области экрана
         window.addEventListener("resize", action);
         // Добавление события на движение пальцем по экрану
@@ -1322,6 +1803,13 @@ var PRESSTAKE_BANNER_CORE = {
       // Функция для добавления события на нажатие на главную область баннера
       // Функция принимает событие
       addBannerMainClickEvent : function(action){
+        var config = PRESSTAKE_BANNER_CORE.CONFIG;
+        if (config.debag == true){
+          var debagList = config.debagList;
+        }
+        if (!action && debagList){
+          debagList.push("119");
+        }
         // Объявление html узла главной области баннера
         var mainBanner = document.getElementById("pt-banner-main");
         // Добавление события при клике
@@ -1330,6 +1818,13 @@ var PRESSTAKE_BANNER_CORE = {
       // Функция добавления события при клике на крестик в главной области баннера
       // Функция принимает событие
       addBannerMainCloseButtonEvent : function(action){
+        var config = PRESSTAKE_BANNER_CORE.CONFIG;
+        if (config.debag == true){
+          var debagList = config.debagList;
+        }
+        if (!action && debagList){
+          debagList.push("120");
+        }
         // Объявление html узел крестика в главной области баннера
         var button = document.getElementById("pt-banner-close_banner");
         // Добавляем событие на клик по html узлу
@@ -1338,6 +1833,13 @@ var PRESSTAKE_BANNER_CORE = {
       // Функция для добавления события на клие в крестик в листинге офферов
       // Функция принимает событие
       addBannerListCloseButtonEvent : function(action){
+        var config = PRESSTAKE_BANNER_CORE.CONFIG;
+        if (config.debag == true){
+          var debagList = config.debagList;
+        }
+        if (!action && debagList){
+          debagList.push("121");
+        }
         // Объявление html узла крестика в листинге офферов
         var button = document.getElementById("pt-banner-close__list");
         // Добавление события на клик
@@ -1346,12 +1848,26 @@ var PRESSTAKE_BANNER_CORE = {
       // Функция для удаления события при скроллинге
       // Функция принимает событие
       removeWindowScrollEvent : function(action){
+        var config = PRESSTAKE_BANNER_CORE.CONFIG;
+        if (config.debag == true){
+          var debagList = config.debagList;
+        }
+        if (!action && debagList){
+          debagList.push("122");
+        }
         // Удаление события
         window.removeEventListener("scroll", action);
       },
       // Функция для удаления события при зуме окна
       // Функция принимает событие
       removeWindowZoomEvent : function(action){
+        var config = PRESSTAKE_BANNER_CORE.CONFIG;
+        if (config.debag == true){
+          var debagList = config.debagList;
+        }
+        if (!action && debagList){
+          debagList.push("123");
+        }
         // Удаление события при масштабировании окна
         window.removeEventListener("resize", action);
         // Удаление события при движении пальцем
@@ -1360,6 +1876,13 @@ var PRESSTAKE_BANNER_CORE = {
       // Функция для удаления события при клике на гланую область баннера
       // Функция принимает событие
       removeBannerMainClickEvent : function(action){
+        var config = PRESSTAKE_BANNER_CORE.CONFIG;
+        if (config.debag == true){
+          var debagList = config.debagList;
+        }
+        if (!action && debagList){
+          debagList.push("124");
+        }
         // Объявляем html узел главной области баннера
         var mainBanner = document.getElementById("pt-banner-main");
         // Удаляем событие при клике
@@ -1368,6 +1891,13 @@ var PRESSTAKE_BANNER_CORE = {
       // Функция удаляет событие при клике на крестик в главной области баннера
       // Функция принимает событие
       removeBannerMainCloseButtonEvent : function(action){
+        var config = PRESSTAKE_BANNER_CORE.CONFIG;
+        if (config.debag == true){
+          var debagList = config.debagList;
+        }
+        if (!action && debagList){
+          debagList.push("125");
+        }
         // Объявляем html узел крестика в главной области баннера
         var button = document.getElementById("pt-banner-close_banner");
         // Удаляем событие
@@ -1376,6 +1906,13 @@ var PRESSTAKE_BANNER_CORE = {
       // Функция для удаления события при клике на крестик в листинге офферов
       // Функция принимает событие
       removeBannerListCloseButtonEvent : function(action){
+        var config = PRESSTAKE_BANNER_CORE.CONFIG;
+        if (config.debag == true){
+          var debagList = config.debagList;
+        }
+        if (!action && debagList){
+          debagList.push("126");
+        }
         // Объявление html узла крестика в листинге офферов
         var button = document.getElementById("pt-banner-close__list");
         // Удаление события
@@ -1385,15 +1922,15 @@ var PRESSTAKE_BANNER_CORE = {
   }
 };
 
-window.addEventListener("DOMContentLoaded", function(){
-  PRESSTAKE_BANNER_CORE.init({
-    URL: {
-      TARGET_URL : window.location.host + "/",
-      PASRSE_URL : "requests/parse",
-      APPS_URL : "requests/apps",
-      STAT_URL : "requests/stat",
-      TRACKING_URL : "requests/track",
-      CSS_URL : "css/style.css"
-    }
-  });
-});
+// window.addEventListener("DOMContentLoaded", function(){
+//   PRESSTAKE_BANNER_CORE.init({
+//     URL: {
+//       TARGET_URL : window.location.host + "/",
+//       PASRSE_URL : "requests/parse",
+//       APPS_URL : "requests/apps",
+//       STAT_URL : "requests/stat",
+//       TRACKING_URL : "requests/track",
+//       CSS_URL : "css/style.css"
+//     }
+//   });
+// });

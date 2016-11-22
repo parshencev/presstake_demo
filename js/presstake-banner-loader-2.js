@@ -97,6 +97,7 @@ var PRESSTAKE_BANNER_CORE = {
         // Добовление событий на скролл
         view_controller.addWindowScrollEvent();
         // Добавление событий на изменение зума
+        view_controller.addWindowScrollLeftEvent();
         view_controller.addWindowZoomEvent();
         // Добавление события на открытие списка офферов при клике
         view_controller.addBannerMainFirstEvent();
@@ -315,6 +316,16 @@ var PRESSTAKE_BANNER_CORE = {
         view_model.addWindowScrollEvent(config_model.getScroll);
         // вызывается функция добавления события на скролл, в которую передаётся собырие показа баннера
         view_model.addWindowScrollEvent(view_model.scrollEvent);
+      },
+      // Функция добавления события позиционирования по левому краю на скролл
+      addWindowScrollLeftEvent : function(){
+        // объявляем модель отрисовки и модель конфигураций
+        var view_model = PRESSTAKE_BANNER_CORE.MODELS.VIEW_MODEL,
+            config_model = PRESSTAKE_BANNER_CORE.MODELS.CONFIG_MODEL;
+        // вызываем функцию из модели отрисовки для добавления события при скроле. В качестве события передаём функцию из модели конфигураций по расчёту левого отступа
+        view_model.addWindowScrollEvent(config_model.getBannerLeft);
+        // вызываем функцию из модели отрисовки для добавления события при скроле. В качестве события передаём функцию добавления левого отступа к банеру.
+        view_model.addWindowScrollEvent(view_model.scrollLeftEvent);
       },
       // функция удаления события открытия баннера на скролл
       removeWindowScrollEvent : function(){
@@ -1966,7 +1977,7 @@ var PRESSTAKE_BANNER_CORE = {
           var debagList = config.debagList;
         }
         // Если нет параметра прокрутки в конфигурациях и объявлен листинг для записи ошибок то
-        if (!config.scroll && debagList){
+        if (config.scroll == undefined && debagList){
           // Запишем ошибку
           debagList.push("107");
         }
@@ -1980,6 +1991,29 @@ var PRESSTAKE_BANNER_CORE = {
           // Вызываем функцию открытия баннера
           PRESSTAKE_BANNER_CORE.CONTROLLERS.VIEW_CONTROLLER.showBanner();
         }
+      },
+      // Функция которая срабытывает при скроллле страницы
+      scrollLeftEvent : function() {
+        // объявляем конфигурации и html узел баннера
+        var config = PRESSTAKE_BANNER_CORE.CONFIG,
+            banner = document.getElementById(config.bannerSpaceID);
+        // Если переключатель записи ошибок положительный то
+        if (config.debag == true){
+          // Объявляем листинг для записи ошибок
+          var debagList = config.debagList;
+        }
+        // Если не объявлен отступ от левого края баннера в конфигурациях и объявлен листинг записи ошибок то
+        if (config.bannerLeft == undefined && debagList){
+          // Записываем ошибку
+          debagList.push("127");
+        }
+        // Если не удалось получить HTML узел баннера и объявлен листинг записи ошибок то
+        if (!banner && debagList){
+          // Записываем ошибку
+          debagList.push("128");
+        }
+        // Добавлем в стили позиционирование по левому краю из конфигураций + %
+        banner.style.left = config.bannerLeft + "%";
       },
       // Функция которая срабатывает при зумировании страницы
       // Функция принимает конфигурации

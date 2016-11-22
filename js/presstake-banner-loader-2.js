@@ -434,28 +434,43 @@ var PRESSTAKE_BANNER_CORE = {
       loadingPageSuccess : function (response, intervalId) {
         // Объявляем конфигурации по умолчанию
         var config = PRESSTAKE_BANNER_CORE.CONFIG;
+        // Если отслеживание ошибок включено то
         if (config.debag == true) {
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
-        // Очистим интервал
+        // Если идентификатор интервала существует
         if (intervalId) {
-          clearInterval(intervalId);  
+          // Очистим интервал
+          clearInterval(intervalId);
+          // Иначе если листинг для записи ошибок объявлен то  
         } else if (debagList){
+          // Запишем ошибку
           debagList.push("2");
         }
-        // Запишем конфигурации с сервера
+        // Если объявлен ответ с сервера
         if (response) {
+          // Если объявлен в ответе сервера идентификатор страницы то
           if (response.page) {
-            config.pageID = response.page;  
+            // Запишем конфигурации с сервера
+            config.pageID = response.page;
+            // Иначе если объявлен листинг для записи ошибок то
           } else if (debagList){
+            // Запишем ошибку
             debagList.push("3");
           }
+          // Если объявлен идентификатор баннера в ответе сервера то
           if (response.banId) {
-            config.ovid = response.banId;    
+            // запишем конфигурации с сервера
+            config.ovid = response.banId;
+            // иначе если объявлен листинг для записи ошибок то    
           } else if (debagList){
+            // Запишем ошибку
             debagList.push("4");
           }
+        // Если ответ сервера не объявлен и объявлен листинг для записи ошибок то
         } else if (debagList) {
+          // Запишем ошибку
           debagList.push("1");
         }
         // Запишем что статус загрузки положительный
@@ -471,40 +486,60 @@ var PRESSTAKE_BANNER_CORE = {
             url_builder_model = PRESSTAKE_BANNER_CORE.MODELS.URL_BUILDER_MODEL;
         // то запишем статус загрузки листинга как положительный
         config.appListStatus = 1;
+        // Если отслеживание ошибок включено то
         if (config.debag == true) {
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
-        // Очистим интервал
+        // Если объявлен идентификатор интервала то
         if (intervalId) {
+          // Очистим интервал
           clearInterval(intervalId);  
+          // иначе если объявлен листинг для записи ошибок то
         } else if (debagList){
+          // Запишем ошибку
           debagList.push("5");
         }
-        
-        // Запишем в информацию оффера ссылку на него
+        // Если объявлен ответ сервера то
         if (response){
+          // Если существует листинг офферов в ответе сервера то
           if (response.data){
+            // объявим цикл до количества ячеек в массиве листинга офферов ответа сервера, также для каждой ячейки объявим объект и порядковый номер элемента
             response.data.map(function(item, itemKey){
+              // Если объявлен листинг для записи ошибок то
               if (debagList) {
+                // Если не существует в конфигурациях идентификатор клиента то
                 if (!config.clientID) {
+                  // Запишем ошибку
                   debagList.push("8");
                 }
+                // Если не существует в конфигурациях идентификатор баннера то
                 if (!config.bannerID) {
+                  // Запишем ошибку
                   debagList.push("9");
                 }
+                // Если не сущестувует в конфигурациях идентификатор страницы то
                 if (!config.pageID) {
+                  // Запишем ошибку
                   debagList.push("10");
                 }
+                // Если в ответе сервера на текущем оффере не существует параметр идентификатор предмета то
                 if (!item.sitid) {
+                  // Запишем ошибку
                   debagList.push("11("+itemKey+")");
                 }
+                // Если не сущестувует в конфигурациях идентификатор то
                 if (!config.ovid) {
+                  // Запишем ошибку
                   debagList.push("12");
                 }
+                // Если не существует список путей в конфигурациях то 
                 if (!config.URL) {
+                  // Запишем ошибку
                   debagList.push("13");
                 }
               }
+              // Запишем в информацию оффера ссылку на него
               item.link = url_builder_model.getTrackingUrl({
                 clientID : config.clientID,
                 bannerID : config.bannerID,
@@ -515,29 +550,44 @@ var PRESSTAKE_BANNER_CORE = {
                 URL : config.URL
               });
             });
+          // Если нет списка офферов в ответе сервера и если объявлен листинг для записи ошибок то
           } else if (debagList) {
+            // Запишем ошибку
             debagList.push("7");
-          }  
+          }
+        // Если нет ответа сервера и объявлен листинг для записи ошибок то  
         } else if (debagList){
+          // Запишем ошибку
           debagList.push("6");
         }
-        
         // Запишем ответ сервера в конфигурации
         config.appList = response;
+        // Запустим инициализацию DOM узлов
         PRESSTAKE_BANNER_CORE.CONTROLLERS.INIT_CONTROLLER.init_content();
       },
+      // Положительный метод на отправку статистики
+      // Функция принимает ответ сервера и идентификатор интервала
       statBannerSuccess : function(response, intervalId){
+        // Объявляем конфигурации, переключатель записи ошибок
         var config = PRESSTAKE_BANNER_CORE.CONFIG,
             debag = config.debag;
+        // Если переключатель положительный то
         if (debag == true) {
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
+        // Если объявлен идентификатор интервала то
         if (intervalId) {
-          clearInterval(intervalId);  
+          // Очистим интервал
+          clearInterval(intervalId);
+        // Если не объявлен идентификатор интервала и объявлен листинг для записи ошибок то
         } else if (debagList) {
+          // Запишем ошибку
           debagList.push("14");
         }
-        if (!response) {
+        // Если не объявлен ответ сервера и объявлен листинг для записи ошибок то
+        if (!response && debagList) {
+          // Запишем ошибку
           debagList.push("15");
         }
       }
@@ -552,17 +602,27 @@ var PRESSTAKE_BANNER_CORE = {
           // объявляем конфигурации по умолчанию
           var config = PRESSTAKE_BANNER_CORE.CONFIG;
         }
+        // Если переключатель дял записи ошибок положителен то
+        // Если переключатель записи ошибок положителен то
         if (config.debag == true){
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
+        // Если в конфигурациях объявлен список путей то
         if (config.URL){
+          // Если в списке путей нет пути корня и объявлен листинг для записи ошибок то
           if (!config.URL.TARGET_URL && debagList){
+            // Запишем ошибку
             debagList.push("17");
           }
+          // Если в списке путей нет пути до стилей и объявлен листинг для записи ошибок то
           if (!config.URL.CSS_URL && debagList){
+            // Запишем ошибку
             debagList.push("18");
           }
+        // Если нет путей и объявлен листинг для записи ошибок то 
         } else if (debagList){
+          // Запишем ошибку
           debagList.push("16");
         }
         // Склеиваем строку по свойствам конфигрураций и возвращаем её
@@ -576,16 +636,25 @@ var PRESSTAKE_BANNER_CORE = {
           // объявляем конфигурации по умолчанию
           var config = PRESSTAKE_BANNER_CORE.CONFIG;
         }
+        // Если переключатель для записи ошибок положителен то
+        // Если переключатель записи ошибок положителен то
         if (config.debag == true){
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
+        // Если в конфигурациях нет идентификатора клиента и объявлен листинг для записи ошибок то
         if (!config.clientID && debagList){
+          // Запишем ошибку
           debagList.push("19");
         }
+        // Если в конфигурациях нет идентификатора баннера и объявлен листинг ошибок то
         if (!config.bannerID && debagList){
+          // Запишем ошибку
           debagList.push("20");
         }
+        // Если в конфигурациях нет локации и объявлен листинг для записи ошибок то
         if (!config.location && debagList){
+          // Запишем ошибку
           debagList.push("21");
         }
         // Склеиваем строку по свойствам конфигрураций
@@ -601,21 +670,32 @@ var PRESSTAKE_BANNER_CORE = {
       getStatUrl_BannerVisible : function (config) {
         // если конфигураций нет то
         if (!config) {
+          // объявлием конфигурации по умолчанию
           var config = PRESSTAKE_BANNER_CORE.CONFIG;
         }
+        // Если переключатель записи ошибок положителен то
         if (config.debag == true){
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
+        // Если в конфигурациях нет идентификатора клиента и объявлен листинг для записи ошибок то
         if (!config.clientID && debagList){
+          // Запишем ошибку
           debagList.push("22");
         }
+        // Если в конфигурациях нет идентификатора баннера и объявлен листинг ошибок то
         if (!config.bannerID && debagList){
+          // Запишем ошибку
           debagList.push("23");
         }
+        // Если в конфигурациях нет идентификатора страницы и объявлен листинг для записи ошибок то
         if (!config.pageID && debagList){
+          // Запишем ошибку
           debagList.push("24");
         }
+        // Если в конфигурациях нет идентификатора и объявлен листинг для записи ошибок то
         if (!config.ovid && debagList){
+          // Запишем ошибку
           debagList.push("25");
         }
         // склеиваем строку по свойствам конфигураций
@@ -634,19 +714,29 @@ var PRESSTAKE_BANNER_CORE = {
         if (!config) {
           var config = PRESSTAKE_BANNER_CORE.CONFIG;
         }
+        // Если отслеживание ошибок включено то
         if (config.debag == true) {
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
+        // Если в конфигурациях нет идентификатора клиента и объявлен листинг для записи ошибок то
         if (!config.clientID && debagList){
+          // Запишем ошибку
           debagList.push("26");
         }
+        // Если в конфигурациях нет идентификатора баннера и объявлен листинг ошибок то
         if (!config.bannerID && debagList){
+          // Запишем ошибку
           debagList.push("27");
         }
+        // Если в конфигурациях нет идентификатора страницы и объявлен листинг для записи ошибок то
         if (!config.pageID && debagList){
+          // Запишем ошибку
           debagList.push("28");
         }    
+        // Если в конфигурациях нет идентификатора и объявлен листинг для записи ошибок то
         if (!config.ovid && debagList){
+          // Запишем ошибку
           debagList.push("29");
         }    
         // склеиваем строку по свойствам конфигураций
@@ -665,19 +755,29 @@ var PRESSTAKE_BANNER_CORE = {
           // Объявляем конфигурации по умолчанию
           var config = PRESSTAKE_BANNER_CORE.CONFIG;
         }
-        if (config.debag) {
+        // Если переключатель записи листинга ошибок положителен то
+        if (config.debag == true){
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
+        // Если в конфигурациях нет идентификатора клиента и объявлен листинг для записи ошибок то
         if (!config.clientID && debagList){
+          // Запишем ошибку
           debagList.push("30");
         }
+        // Если в конфигурациях нет идентификатора баннера и объявлен листинг ошибок то
         if (!config.bannerID && debagList){
+          // Запишем ошибку
           debagList.push("31");
         }
+        // Если в конфигурациях нет идентификатора страницы и объявлен листинг для записи ошибок то
         if (!config.pageID && debagList){
+          // Запишем ошибку
           debagList.push("32");
         }
+        // Если в конфигурациях нет идентификатора и объявлен листинг для записи ошибок то
         if (!config.ovid && debagList){
+          // Запишем ошибку
           debagList.push("33");
         }
         // Собираем строку по свойствам конфигураций
@@ -697,22 +797,34 @@ var PRESSTAKE_BANNER_CORE = {
           // объявляем конфигурации по умолчанию
           var config = PRESSTAKE_BANNER_CORE.CONFIG;
         }
+        // Если переключатель записи ошибок положителен то
         if (config.debag == true){
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
+        // Если в конфигурациях нет идентификатора клиента и объявлен листинг для записи ошибок то
         if (!config.clientID && debagList){
+          // Запишем ошибку
           debagList.push("34");
         }
+        // Если в конфигурациях нет идентификатора баннера и объявлен листинг ошибок то
         if (!config.bannerID && debagList){
+          // Запишем ошибку
           debagList.push("35");
         }
+        // Если в конфигурациях нет идентификатора страницы и объявлен листинг для записи ошибок то
         if (!config.pageID && debagList){
+          // Запишем ошибку
           debagList.push("36");
         }
+        // Если в конфигурациъ нет идентификатора предмета магазина и объявлен листинг для записи ошибок то
         if (!config.sitID && debagList){
+          // Запишем ошибку
           debagList.push("37");
         }
+        // Если в конфигурациях нет идентификатора и объявлен листинг для записи ошибок то
         if (!config.ovid && debagList){
+          // Запишем ошибку
           debagList.push("38");
         }
         // склеиваем строку по свойствам конфигураций
@@ -732,16 +844,24 @@ var PRESSTAKE_BANNER_CORE = {
           // объявляем конфигурации по умолчанию
           var config = PRESSTAKE_BANNER_CORE.CONFIG;
         }
+        // Если переключатель записи ошибок положителен то
         if (config.debag == true){
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
+        // Если в конфигурациях нет идентификатора клиента и объявлен листинг для записи ошибок то
         if (!config.clientID && debagList){
+          // Запишем ошибку
           debagList.push("39");
         }
+        // Если в конфигурациях нет идентификатора баннера и объявлен листинг ошибок то
         if (!config.bannerID && debagList){
+          // Запишем ошибку
           debagList.push("40");
         }
+        // Если в конфигурациях нет локации и объявлен листинг для записи ошибок то
         if (!config.location && debagList){
+          // Запишем ошибку
           debagList.push("41");
         }
         // Склеиваем строку по свойствам конфигураций
@@ -760,22 +880,34 @@ var PRESSTAKE_BANNER_CORE = {
           // объявляем конфигурации по умолчанию
           var config = PRESSTAKE_BANNER_CORE.CONFIG;
         }
+        // Если отслеживание ошибок включено то
         if (config.debag == true) {
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
+        // Если в конфигурациях нет идентификатора клиента и объявлен листинг для записи ошибок то
         if (!config.clientID && debagList){
+          // Запишем ошибку
           debagList.push("42");
         }
+        // Если в конфигурациях нет идентификатора баннера и объявлен листинг ошибок то
         if (!config.bannerID && debagList){
+          // Запишем ошибку
           debagList.push("43");
         }
+        // Если в конфигурациях нет идентификатора страницы и объявлен листинг для записи ошибок то
         if (!config.pageID && debagList){
+          // Запишем ошибку
           debagList.push("44");
         }
+        // Если в конфигурациях нет операционной системы клиента и объявлен листинг для записи ошибок то
         if (!config.clientOS && debagList){
+          // Запишем ошибку
           debagList.push("45");
         }
+        // Если в конфигурациях нет идентификатора и объявлен листинг для записи ошибок то
         if (!config.ovid && debagList){
+          // Запишем ошибку
           debagList.push("46");
         }
         // Склеиваем строку по свойствам конфигураций
@@ -794,19 +926,29 @@ var PRESSTAKE_BANNER_CORE = {
         if (!config) {
           var config = PRESSTAKE_BANNER_CORE.CONFIG;
         }
+        // Если переключатель записи ошибок положителен то
         if (config.debag == true){
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
+        // Если в конфигурациях нет идентификатора и объявлен листинг для записи ошибок то
         if (!config.ID && debagList){
+          // Запишем ошибку
           debagList.push("47");
         }
+        // Если в конфигурациях нет идентификатора и объявлен листинг для записи ошибок то
         if (!config.ovid && debagList){
+          // Запишем ошибку
           debagList.push("48");
         }
+        // Если в конфигурацих нет адресса нового пользователя и объявлен листинг для записи ошибок то
         if (!config.email && debagList){
+          // Запишем ошибку
           debagList.push("49");
         }
+        // Если в конфигурациях нет операционной системы клиента и объявлен листинг для записи ошибок то
         if (!config.clientOS && debagList){
+          // Запишем ошибку
           debagList.push("50");
         }
         // Склеиваем строку по свойствам конфигураций
@@ -826,19 +968,29 @@ var PRESSTAKE_BANNER_CORE = {
           // объявляем конфигурации по умолчанию
           var config = PRESSTAKE_BANNER_CORE.CONFIG;
         }
+        // Если переключатель записи ошибок положителен то
         if (config.debag == true){
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
+        // Если в конфигурациях нет идентификатора и объявлен листинг для записи ошибок то
         if (!config.ID && debagList){
+          // Запишем ошибку
           debagList.push("51");
         }
+        // Если в конфигурациях нет идентификатора и объявлен листинг для записи ошибок то
         if (!config.ovid && debagList){
+          // Запишем ошибку
           debagList.push("52");
         }
+        // Если в конфигурацих нет адресса нового пользователя и объявлен листинг для записи ошибок то
         if (!config.email && debagList){
+          // Запишем ошибку
           debagList.push("53");
         }
+        // Если в конфигурациях нет операционной системы клиента и объявлен листинг для записи ошибок то
         if (!config.clientOS && debagList){
+          // Запишем ошибку
           debagList.push("54");
         }
         // Склеиваем строку по свойствам конфигураций
@@ -859,34 +1011,49 @@ var PRESSTAKE_BANNER_CORE = {
         // Создание объекта соединения и объявляем конфигурации
         var request = new XMLHttpRequest(),
             config = PRESSTAKE_BANNER_CORE.CONFIG;
+        // Если переключатель записи ошибок положителен то
         if (config.debag == true){
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
+        // Если не объявлен ответ сервера и объявлен листинг для записи ошибок то
         if (!request && debagList) {
+          // Запишем ошибку
           debagList.push("55");
         }
+        // Если не объявлен путь и объявлен листинг для записи ошибок то
         if (!url && debagList) {
+          // Запишем ошибку
           debagList.push("57");
         }
+        // Если не объявлена функция на положительный ответ сервера и объявлен листинг для записи ошибок то
         if (!callback && debagList){
+          // Запишем ошибку
           debagList.push("58");
         }
+        // Если не объявлена функция на отрицательный ответ сервера и объявлен листинг для записи ошибок то 
         if (!callbackError && debagList){
+          // Запишем ошибку
           debagList.push("59");
         }
+        // Если не объявлен идентификатор индервала и объявлен листинг для записи ошибок то
         if (!intervalId && debagList){
+          // Запишем ошибку
           debagList.push("60");
         }
         // Вызод метода для установки соединения по переданному пути
         request.open('GET', url, true);
         // События которые должны вызываться во время соединения
         request.onreadystatechange = function(){
+          // Если стадия отправки запроса не равна 4 то прекращаем работу функции
           if (request.readyState != 4) { return false; }
           // Если статус сервера успешен и существует успешный метод то
           if (request.status == 200 && callback) {
             // Преобразуем в JSON ответ сервера
             var response = JSON.parse(request.responseText);
+            // Если ответ сервера не удачен и если объявлен листинг для записи ошибок то
             if (!response && debagList) {
+              // Запишем ошибку
               debagList.push("56");
             }
             // Проверяем есть ли в ответе сервера свойство статуса
@@ -917,20 +1084,31 @@ var PRESSTAKE_BANNER_CORE = {
       // Функция повторения запроса
       // Функция принимает конфигурации, функцию для ассихронной связи, путь с параметрами запроса, функцию при удачном соединении и не удачном
       repeater : function (config, ajax_function, url, callback, callbackError) {
+        // Объявляем переключатель записи ошибок равным переданым конфигурациям или конфигурациям по умолчанию
         var debag = config.debag || PRESSTAKE_BANNER_CORE.CONFIG.debag;
+        // если переключатель положительный то
         if (debag == true){
+          // объявляем листинг для записи ошибок из переданых конфигураций или из стандартных
           var debagList = config.debagList || PRESSTAKE_BANNER_CORE.CONFIG.debagList;
         }
+        // Если нет функции ассихронной связи и если объявлен листинг для записи ошибок то
         if (!ajax_function && debagList){
+          // Запишем ошибку
           debagList.push("61");
         }
+        // Если не объявлена функция на положительный ответ сервера и объявлен листинг для записи ошибок то
         if (!callback && debagList){
+          // Запишем ошибку
           debagList.push("62");
         }
+        // Если не объявлена функция на отрицательный ответ сервера и объявлен листинг для записи ошибок то 
         if (!callbackError && debagList){
+          // Запишем ошибку
           debagList.push("63");
         }
+        // Если не объявлен путь до сервера и объявлен листинг для записи ошибок то
         if (!url && debagList){
+          // Запишем ошибку
           debagList.push("64");
         }
         // Объявляем интервал, запускаем его и записываем его индентификатор
@@ -944,19 +1122,29 @@ var PRESSTAKE_BANNER_CORE = {
             // Прибавляем к нему 1
             this.tick ++;
           }
+          // Если нет в конфигурациях ограничителя повторейний запросов и объявлен листинг записи ошибок то
           if (!config.repeatCounter && debagList) {
+            // Запишем ошибку
             debagList.push("65("+intervalId+", "+tick+")");
           }
+          // Если не объявлен путь и объявлен листинг для записи ошибок то
           if (!url && debagList) {
+            // Запишем ошибку
             debagList.push("66("+intervalId+", "+tick+")");
           }
+          // Если не объявлена функция на положительный ответ сервера и объявлен листинг для записи ошибок то
           if (!callback && debagList) {
+            // Запишем ошибку
             debagList.push("67("+intervalId+", "+tick+")");
           }
+          // Если не объявлена функция на отрицательный ответ сервера и объявлен листинг для записи ошибок то
           if (!callbackError && debagList) {
+            // Запишем ошибку
             debagList.push("68("+intervalId+", "+tick+")");
           }
+          // Если нет ограничителя времени повтора запроса в конфигурациях и объявлен листинг для записи обшибок то
           if (!config.repeatTimeout && debagList){
+            // Запишем ошибку
             debagList.push("69("+intervalId+", "+tick+")"); 
           }
           // Вызываем ассихронную функцию и передаём в неё путь, удачную функцию, неудачную, идентификатор интервала
@@ -979,10 +1167,13 @@ var PRESSTAKE_BANNER_CORE = {
         // Запись протокола клиента
         var protocol = document.location.protocol,
             config = PRESSTAKE_BANNER_CORE.CONFIG;
+        // Если отслеживание ошибок включено то
         if (config.debag == true) {
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
         if (!protocol && debagList){
+          // Запишем ошибку
           debagList.push("70");
         }
         // Если протокол защищённый то возвращаем https:// если нет то http://
@@ -997,10 +1188,14 @@ var PRESSTAKE_BANNER_CORE = {
         // Получение строки с иформацией об аппаратуре и програмном обеспечении клиента
         var userAgent = navigator.userAgent,
             config = PRESSTAKE_BANNER_CORE.CONFIG;
+        // Если переключатель записи ошибок положителен то
         if (config.debag == true){
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
+        // Если не объявлен вывод данных о клиенте и объявлен листинг для записи ошибок то
         if (!userAgent && debagList){
+          // Запишем ошибку
           debagList.push("71");
         }
         // Если поиск по регулярному выродению выполнен успешно (есть вхождения)
@@ -1023,21 +1218,31 @@ var PRESSTAKE_BANNER_CORE = {
           // объявляем конфигурации по умолчанию
           var config = PRESSTAKE_BANNER_CORE.CONFIG;
         }
+        // Если переключатель записи ошибок положителен то
         if (config.debag == true){
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
+        // Если не объявлен идентификатор загрузчика и объявлен листинг для записи ошибок то 
         if (!config.loaderID && debagList) {
+          // Запишем ошибку
           debagList.push("72");
         }
         // Записываем переменную - дискриптор на HTML узер загрузчика по идентификатору из конфигураций
         var loaderDOM = document.getElementById(config.loaderID);
+        // Если не объявлен HTML узел загрузчика и объявлен листинг для записи ошибок то
         if(!loaderDOM && debagList) {
+          // Запишем ошибку
           debagList.push("73");
         }
+        // Если в HTML узле загрузчика нет атребута с идентификатором банера и объявлен листинг для записи ошибок то
         if (!loaderDOM.getAttribute("data-bid") && debagList){
+          // Запишем ошибку
           debagList.push("74");
         }
+        // Если в HTML узле загрузчика нет аттребута с идентификатором клиента и объявлен листинг для записи ошибок то
         if (!loaderDOM.getAttribute("data-clid") && debagList){
+          // Запишем ошибку
           debagList.push("75");
         } 
         // Записываем в конфигурации атребуты HTML узла : номер баннера и номер клиента
@@ -1054,16 +1259,24 @@ var PRESSTAKE_BANNER_CORE = {
             clientHeight = Math.max(document.documentElement.clientHeight, document.body.clientHeight),
             scrollHeight = document.documentElement.scrollHeight,
             scroll = (windowScrollTop * 100) / clientHeight;
+        // Если переключатель записи ошибок положителен то
         if (config.debag == true){
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
-        if (!windowScrollTop && debagList){
+        // Если не объявлен вертикальный скролл окна и объявлен листинг для записи ошибок то
+        if (windowScrollTop == undefined && debagList){
+          // Запишем ошибку
           debagList.push("76");
         }
-        if (!clientHeight && debagList){
+        // Если не объявлена высота клиентской части отображения и объявлен листинг для записи ошибок то
+        if (clientHeight == undefined && debagList){
+          // Запишем ошибку
           debagList.push("77");
         }
-        if (!scrollHeight && debagList){
+        // Если не объявлена высота вертикального скролла и объявлен листинг для записи ошибок то
+        if (scrollHeight == undefined && debagList){
+          // Запишем ошибку
           debagList.push("78");
         }
         // Если процент скролла равен 0 и высота скролла меньше или равна высоте окна
@@ -1079,10 +1292,14 @@ var PRESSTAKE_BANNER_CORE = {
         // бъявляем конфигурации и ширину окна клиента
         var config = PRESSTAKE_BANNER_CORE.CONFIG,
             width = window.innerWidth;
+        // Если переключатель записи ошибок положителен то
         if (config.debag == true){
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
-        if (!width && debagList){
+        // Если не объявлена ширина окна и объявлен листинг для записи ошибок то
+        if (width == undefined && debagList){
+          // Запишем ошибку
           debagList.push("79");
         }
         // Записываем зум для баннера в конфигурации
@@ -1094,13 +1311,19 @@ var PRESSTAKE_BANNER_CORE = {
         var config = PRESSTAKE_BANNER_CORE.CONFIG,
             clientWidth = document.documentElement.clientWidth,
             scrollLeft = window.scrollX;
+        // Если переключатель записи ошибок положителен то
         if (config.debag == true){
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
-        if (!clientWidth && debagList){
+        // Если ширина основного документа не объявлена и объявлен листинг для записи ошибок то
+        if (clientWidth == undefined && debagList){
+          // Запишем ошибку
           debagList.push("80");
         }
-        if (!scrollLeft && debagList){
+        // Если горизонтальный скролл окна не объявлен и объявлен листинг для записи ошибок то
+        if (scrollLeft == undefined && debagList){
+          // Запишем ошибку
           debagList.push("81");
         }
         // Записываем процент отступа от левого края для баннера
@@ -1114,7 +1337,7 @@ var PRESSTAKE_BANNER_CORE = {
             scrollTop = window.scrollY;
         //console.log((scrollTop * 100) / clientHeight);
         // Записываем процентный отступ от нижнего края псевдо видимой области экрана клиента для баннера
-        config.bottom = 0;
+        config.bannerBottom = 0;
       }
     },
     // Модель отрисовки и обработки событий
@@ -1127,7 +1350,9 @@ var PRESSTAKE_BANNER_CORE = {
           // Объявляются стандартные конфигурации
           var config = PRESSTAKE_BANNER_CORE.CONFIG;
         }
-        if (config.debag){
+        // Если переключатель записи ошибок положительный то
+        if (config.debag == true){
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
         // Обявляем объект - ответ сервера на загрузку листинга офферов
@@ -1165,7 +1390,9 @@ var PRESSTAKE_BANNER_CORE = {
             // создаём html узел для цветного текста в нижнем тексте главной области
             banner_main_text_bottom_colored = document.createElement("a");
 
+        // Если нет ответа сервера и объявлен листинг для записи ошибок то
         if (!response && debagList){
+          // Запишем ошибку
           debagList.push("82");
         }
 
@@ -1174,7 +1401,9 @@ var PRESSTAKE_BANNER_CORE = {
         // добавляеам идентификатор для контейнера баннера
         banner.id = config.bannerSpaceID;
 
-        if (!config.bannerSpaceID && debagList){
+        // Если нет идентификатора баннера и объявлен листинг для записи ошибок то
+        if (config.bannerSpaceID == undefined && debagList){
+          // Запишем ошибку
           debagList.push("83");
         }
 
@@ -1218,10 +1447,14 @@ var PRESSTAKE_BANNER_CORE = {
         // Добавляем класс для контейнера баннера из конфигураций
         banner.classList.add(config.bannerClasses[response.templateType]);
 
+        // Если нет классов в конфигурации и объявлен листинг для записи ошибок то
         if (!config.bannerClasses && debagList){
+          // Запишем ошибку
           debagList.push("84");
         }
-        if(!response.templateType && debagList){
+        // Если нет в ответе сервера типа отображения баннера и объявлен листинг для записи ошибок то
+        if(response.templateType == undefined && debagList){
+          // Запишем ошибку
           debagList.push("85");
         }
 
@@ -1266,7 +1499,9 @@ var PRESSTAKE_BANNER_CORE = {
         // Добавляем в главную область баннера крестик
         banner_main.appendChild(banner_main_close);
 
+        // Если нет листинга офферов в ответе сервера и объявлен листинг для записи ошибок то
         if (!response.data && debagList){
+          // Запишем ошибку
           debagList.push("86");
         }
 
@@ -1292,7 +1527,9 @@ var PRESSTAKE_BANNER_CORE = {
           // Добавляем класс для контейнера картинки оффера
           banner_list_scroll_list_item_image.classList.add("pt-banner-list-image-wrapper");
 
+          // Если нет сгенерированной ссылки на оффер и объявлен листинг для записи ошибок то
           if (!item.link && debagList) {
+            // Запишем ошибку
             debagList.push("87("+itemKey+")");
           }
 
@@ -1309,7 +1546,9 @@ var PRESSTAKE_BANNER_CORE = {
           // Добавляем класс для ссылки - кнопки оффера
           banner_list_scroll_list_item_button.classList.add("pt-banner-item-shop_button");
 
+          // Если нет таргетирования по системе магазина оффера и объявлен листинг для записи ошибок то
           if (!item.itarget && debagList){
+            // Запишем ошибку
             debagList.push("88("+itemKey+")");
           }
 
@@ -1327,7 +1566,9 @@ var PRESSTAKE_BANNER_CORE = {
             banner_list_scroll_list_item_button.innerHTML = "В магазин";
           }
 
+          // Если нет картинки оффера и объявлен листинг для записи ошибок то
           if (!item.image && debagList){
+            // Запишем ошибку
             debagList.push("89("+itemKey+")");
           }
 
@@ -1340,24 +1581,31 @@ var PRESSTAKE_BANNER_CORE = {
           // добавляем текстовый узел для ссылки на оффер, который состоит из корневого каталога оффера
           //banner_list_scroll_list_item_link.innerHTML = item.link.match(/[aA-zZ]*\.[aA-zZ]*/);
 
+          // Если нет текстового названия для ссылки на оффер и объявлен листинг для записи ошибок то
           if (!item.linkName && debagList){
+            // Запишем ошибку
             debagList.push("90("+itemKey+")");
           }
 
+          // Добавляем текстовый узел в ссылку
           banner_list_scroll_list_item_link.innerHTML = item.linkName;
-          // добавляем текстовый узел для заголовка оффера
-
+          
+          // Если нет имени оффера и объявлен листинг для записи ошибок то
           if (!item.name && debagList){
+            // Запишем ошибку
             debagList.push("91("+itemKey+")");
           }
-
+          
+          // добавляем текстовый узел для заголовка оффера
           banner_list_scroll_list_item_title.innerHTML = item.name;
-          // добавляем текстовый узел для цены оффера
-
-          if (!item.price && debagList){
+          
+          // Если нет цены оффера и объявлен листинг для записи ошибок то
+          if (item.price == undefined && debagList){
+            // Запишем ошибку
             debagList.push("92("+itemKey+")");
           }
 
+          // добавляем текстовый узел для цены оффера
           banner_list_scroll_list_item_price.innerHTML = item.price;
           // добавляем url атрребут для ссылки - кнопки на оффер
           banner_list_scroll_list_item_button.href = item.link;
@@ -1365,7 +1613,9 @@ var PRESSTAKE_BANNER_CORE = {
           // Добавляем в контейнер картинки картинку оффера
           banner_list_scroll_list_item_image.appendChild(banner_list_scroll_list_item_image_img);
 
+          // Если нет альтернативных текстов для оффера и объявлен листинг для записи ошибок то
           if (!item.hasOwnProperty("alternativeText") && debagList){
+            // Запишем ошибку
             debagList.push("93("+itemKey+")");
           }
 
@@ -1387,10 +1637,14 @@ var PRESSTAKE_BANNER_CORE = {
             // добавление класса для нижнего альтернативного текста
             banner_list_scroll_list_item_alternative_bottom.classList.add("pt-banner-alternative_text-bottom");
 
-            if (!item.alternativeText.top && debagList){
+            // Если нет верхнего альтернативного текста оффера и объявлен листинг для записи ошибок то
+            if (item.alternativeText.top == undefined && debagList){
+              // Запишем ошибку
               debagList.push("94("+itemKey+")");
             }
-            if (!item.alternativeText.bottom && debagList){
+            // Если нет нижнего альтернативного текста оффера и объявлен листинг для записи ошибок то
+            if (item.alternativeText.bottom == undefined && debagList){
+              // Запишем ошибку
               debagList.push("95("+itemKey+")"); 
             }
 
@@ -1414,7 +1668,9 @@ var PRESSTAKE_BANNER_CORE = {
           // добавление в ячейку оффера заголовка
           banner_list_scroll_list_item.appendChild(banner_list_scroll_list_item_title);
 
+          // Если нет краткого описания оффера и объявлен листинг для записи ошибок то
           if (!item.hasOwnProperty("description") && debagList){
+            // Запишем ошибку
             debagList.push("96("+itemKey+")");
           }
 
@@ -1482,7 +1738,9 @@ var PRESSTAKE_BANNER_CORE = {
           // добавление текстового узла для вступления ресурса
           banner_list_header_source_before.innerHTML = "По данным";
 
+          // Если нет названия ресурса и объявлен листинг для записи ошибок то
           if (!response.shipperName && debagList){
+            // Запишем ошибку
             debagList.push("97");
           }
 
@@ -1496,7 +1754,9 @@ var PRESSTAKE_BANNER_CORE = {
           // Добавляем атребут для отображения по умолчанию
           banner_list_header_selector_selector_option.setAttribute("selected", "");
 
+          // Если нет гео позиции по умолчанию и объявлен листинг для записи ошибок то
           if (!response.geo.name && debagList){
+            // Запишем ошибку
             debagList.push("98");
           }
 
@@ -1505,7 +1765,9 @@ var PRESSTAKE_BANNER_CORE = {
           // Добавляем опцию в селект
           banner_list_header_selector_selector.appendChild(banner_list_header_selector_selector_option);
 
+          // Если нет списка городов и объявлен листинг для записи ошибок то
           if (!response.hasOwnProperty("cities") && debagList){
+            // Запишем ошибку
             debagList.push("99");
           }
 
@@ -1516,10 +1778,14 @@ var PRESSTAKE_BANNER_CORE = {
               // объявляем html узел для опции селектора
               var banner_list_header_selector_selector_option = document.createElement("option");
 
-              if (!city.id && debagList){
+              // Если нет у города идентификатора и объявлен листинг для записи ошибок то
+              if (city.id == undefined && debagList){
+                // Запишем ошибку
                 debagList.push("100("+cityKey+")");
               }
+              // Если нет у города имени и объявлен листинг для записи ошибок то
               if (!city.name && debagList){
+                // Запишем ошибку
                 debagList.push("101("+cityKey+")"); 
               }
 
@@ -1569,15 +1835,19 @@ var PRESSTAKE_BANNER_CORE = {
             head = document.head,
             config = PRESSTAKE_BANNER_CORE.CONFIG;
 
+        // Если переключатель записи ошибок положителен то
         if (config.debag == true){
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
         // Добавляем свойство указания на стилевой файл к тегу стилей
         css.rel = "stylesheet";
         // Добавляет свойство для обозначения пути до стилевого файла и приравниваем путь полученый при вызове
         if (!url && debagList){
+          // Запишем ошибку
           debagList.push("102");
         }
+        // запишем ссылку для загрузки стилей
         css.href = url;
         // Добавляем в шапку страницы тег для стилей
         head.appendChild(css);
@@ -1590,10 +1860,14 @@ var PRESSTAKE_BANNER_CORE = {
           // Объявляем конфигурации равными по умолчанию
           var config = PRESSTAKE_BANNER_CORE.CONFIG;
         }
+        // Если переключатель записи ошибок положителен то
         if (config.debag == true){
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
+        // Если нет идентификатора html узла баннера в конфигурациях и объявлен листинг для записи ошибок то
         if (!config.bannerSpaceID && debagList){
+          // Запишем ошибку
           debagList.push("103");
         }
         // Объявляем html узел баннера
@@ -1611,10 +1885,14 @@ var PRESSTAKE_BANNER_CORE = {
           // Объявляем конфигурации равными по умолчанию
           var config = PRESSTAKE_BANNER_CORE.CONFIG;
         }
+        // Если переключатель записи ошибок положителен то
         if (config.debag == true){
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
+        // Если нет идентификатора html узла баннера в конфигурациях и объявлен листинг для записи ошибок то
         if (!config.bannerSpaceID && debagList){
+          // Запишем ошибку
           debagList.push("104");
         }
         // Объявляем html узел баннера
@@ -1632,10 +1910,14 @@ var PRESSTAKE_BANNER_CORE = {
           // Объявляем конфигурации равными по умолчанию
           var config = PRESSTAKE_BANNER_CORE.CONFIG;
         }
+        // Если переключатель записи ошибок положителен то
         if (config.debag == true){
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
+        // Если нет идентификатора html узла баннера в конфигурациях и объявлен листинг для записи ошибок то
         if (!config.bannerSpaceID && debagList){
+          // Запишем ошибку
           debagList.push("105");
         }
         // Объявляем html узел баннера
@@ -1654,10 +1936,14 @@ var PRESSTAKE_BANNER_CORE = {
           // Объявляем конфигурации по умолчанию
           var config = PRESSTAKE_BANNER_CORE.CONFIG;
         }
+        // Если переключатель записи ошибок положителен то
         if (config.debag == true){
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
+        // Если нет идентификатора html узла баннера в конфигурациях и объявлен листинг для записи ошибок то
         if (!config.bannerSpaceID && debagList){
+          // Запишем ошибку
           debagList.push("106");
         }
         // Объявляем html узел баннера
@@ -1674,13 +1960,19 @@ var PRESSTAKE_BANNER_CORE = {
           // Объявляем конфигурации равными по усмолчанию
           var config = PRESSTAKE_BANNER_CORE.CONFIG;
         }
+        // Если переключатель записи ошибок положителен то
         if (config.debag == true){
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
+        // Если нет параметра прокрутки в конфигурациях и объявлен листинг для записи ошибок то
         if (!config.scroll && debagList){
+          // Запишем ошибку
           debagList.push("107");
         }
+        // Если в конфигурациях нет операционной системы клиента и объявлен листинг для записи ошибок то
         if (!config.clientOS && debagList){
+          // Запишем ошибку
           debagList.push("108");
         }
         // если скролл страницы больше 25 процентов и операционная система клиента не в составе категории другие то
@@ -1695,16 +1987,24 @@ var PRESSTAKE_BANNER_CORE = {
         // Объявляются конфигурации и html узел баннера
         var config = PRESSTAKE_BANNER_CORE.CONFIG,
             banner = document.getElementById(config.bannerSpaceID);
-        if (config.debag) {
+        // Если переключатель записи листинга ошибок положителен то
+        if (config.debag == true){
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
-        if (!config.zoom && debagList){
+        // Если нет параметра увеличения в конфигурациях и объявлен листинг для записи ошибок то
+        if (config.zoom == undefined && debagList){
+          // Запишем ошибку
           debagList.push("109");
         }
-        if (!config.left && debagList){
+        // Если нет параметра отступа от левого края в конфигурацих и объявлен листинг для записи ошибок то
+        if (config.bannerLeft == undefined && debagList){
+          // Запишем ошибку
           debagList.push("110");
         }
-        if (!config.bottom && debagList){
+        // Если нет параметра отступа от нижнего края в конфигурациях и объявлен листинг для записи ошибок то
+        if (config.bannerBottom == undefined && debagList){
+          // Запишем ошибку
           debagList.push("111");
         }
         // Добавление зума в стили баннера из конфигураций
@@ -1718,20 +2018,28 @@ var PRESSTAKE_BANNER_CORE = {
       // Функция принимает событие
       bannerMainClickFirstEvent : function (event) {
         var config = PRESSTAKE_BANNER_CORE.CONFIG;
+        // Если переключатель записи ошибок положителен то
         if (config.debag == true){
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
         // Корректировка события если необходимо
         event = event || window.event;
+        // Если нет события и объявлен листинг для записи ошибок то
         if (!event && debagList){
+          // Запишем ошибку
           debagList.push("112");
         }
         // Объявление DOM объекта события
         var target = event.target || event.srcElement;
+        // Если нет элемента таргетирования и объявлен листинг для записи ошибок то
         if (!target && debagList){
+          // Запишем ошибку
           debagList.push("113");
         }
+        // Если у элемента тагретирования нет идентификатора и объявлен листинг для записи ошибок то
         if (!target.id && debagList){
+          // Запишем ошибку
           debagList.push("114");
         }
         // Если у DOM объекта нет идентификатора или идентификатор не равен кнопке закрытия то
@@ -1743,17 +2051,23 @@ var PRESSTAKE_BANNER_CORE = {
       // Функция для закрытия листинга офферов при клике на главную облать баннера
       bannerMainClickSecondEvent : function (event){
         var config = PRESSTAKE_BANNER_CORE.CONFIG;
+        // Если переключатель записи ошибок положительный то 
         if(config.debag == true){
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
         // Корректировака события если нужно
         event = event || window.event;
         // Объявление DOM бъекта события
         var target = event.target || event.srcElement;
+        // Если нет элемента таргетирования и объявлен листинг для записи ошибок то
         if (!target && debagList){
+          // Запишем ошибку
           debagList.push("115");
         }
+        // Если у ээлемента таргетирования нет идентификатора и объявлен листинг для записи ошибок то
         if (!target.id && debagList){
+          // Запишем ошибку
           debagList.push("116");
         }
         // Если у DOM объекта события нет идентификатора или идентификатор не равен кнопке закрытия то
@@ -1776,10 +2090,14 @@ var PRESSTAKE_BANNER_CORE = {
       // Функция принимает событие
       addWindowScrollEvent : function(action){
         var config = PRESSTAKE_BANNER_CORE.CONFIG;
+        // Если переключатель записи ошибок положителен то
         if (config.debag == true){
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
+        // Если нет функции действия и объявлен листинг для записи ошибок то
         if (!action && debagList){
+          // Запишем ошибку
           debagList.push("117");
         }
         // Добавление события на скролл
@@ -1789,10 +2107,14 @@ var PRESSTAKE_BANNER_CORE = {
       // Функция принимает событие
       addWindowZoomEvent : function(action){
         var config = PRESSTAKE_BANNER_CORE.CONFIG;
+        // Если переключатель записи ошибок положителен то
         if (config.debag == true){
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
+        // Если нет функции действия и объявлен листинг для записи ошибок то
         if (!action && debagList){
+          // Запишем ошибку
           debagList.push("118");
         }
         // Добавление события на масштабирование области экрана
@@ -1804,10 +2126,14 @@ var PRESSTAKE_BANNER_CORE = {
       // Функция принимает событие
       addBannerMainClickEvent : function(action){
         var config = PRESSTAKE_BANNER_CORE.CONFIG;
+        // Если переключатель записи ошибок положителен то
         if (config.debag == true){
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
+        // Если нет функции действия и объявлен листинг для записи ошибок то
         if (!action && debagList){
+          // Запишем ошибку
           debagList.push("119");
         }
         // Объявление html узла главной области баннера
@@ -1819,10 +2145,14 @@ var PRESSTAKE_BANNER_CORE = {
       // Функция принимает событие
       addBannerMainCloseButtonEvent : function(action){
         var config = PRESSTAKE_BANNER_CORE.CONFIG;
+        // Если переключатель записи ошибок положителен то
         if (config.debag == true){
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
+        // Если нет функции действия и объявлен листинг для записи ошибок то
         if (!action && debagList){
+          // Запишем ошибку
           debagList.push("120");
         }
         // Объявление html узел крестика в главной области баннера
@@ -1834,10 +2164,14 @@ var PRESSTAKE_BANNER_CORE = {
       // Функция принимает событие
       addBannerListCloseButtonEvent : function(action){
         var config = PRESSTAKE_BANNER_CORE.CONFIG;
+        // Если переключатель записи ошибок положителен то
         if (config.debag == true){
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
+        // Если нет функции действия и объявлен листинг для записи ошибок то
         if (!action && debagList){
+          // Запишем ошибку
           debagList.push("121");
         }
         // Объявление html узла крестика в листинге офферов
@@ -1849,10 +2183,14 @@ var PRESSTAKE_BANNER_CORE = {
       // Функция принимает событие
       removeWindowScrollEvent : function(action){
         var config = PRESSTAKE_BANNER_CORE.CONFIG;
+        // Если переключатель записи ошибок положителен то
         if (config.debag == true){
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
+        // Если нет функции действия и объявлен листинг для записи ошибок то
         if (!action && debagList){
+          // Запишем ошибку
           debagList.push("122");
         }
         // Удаление события
@@ -1862,10 +2200,14 @@ var PRESSTAKE_BANNER_CORE = {
       // Функция принимает событие
       removeWindowZoomEvent : function(action){
         var config = PRESSTAKE_BANNER_CORE.CONFIG;
+        // Если переключатель записи ошибок положителен то
         if (config.debag == true){
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
+        // Если нет функции действия и объявлен листинг для записи ошибок то
         if (!action && debagList){
+          // Запишем ошибку
           debagList.push("123");
         }
         // Удаление события при масштабировании окна
@@ -1877,10 +2219,14 @@ var PRESSTAKE_BANNER_CORE = {
       // Функция принимает событие
       removeBannerMainClickEvent : function(action){
         var config = PRESSTAKE_BANNER_CORE.CONFIG;
+        // Если переключатель записи ошибок положителен то
         if (config.debag == true){
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
+        // Если нет функции действия и объявлен листинг для записи ошибок то
         if (!action && debagList){
+          // Запишем ошибку
           debagList.push("124");
         }
         // Объявляем html узел главной области баннера
@@ -1892,10 +2238,14 @@ var PRESSTAKE_BANNER_CORE = {
       // Функция принимает событие
       removeBannerMainCloseButtonEvent : function(action){
         var config = PRESSTAKE_BANNER_CORE.CONFIG;
+        // Если переключатель записи ошибок положителен то
         if (config.debag == true){
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
+        // Если нет функции действия и объявлен листинг для записи ошибок то
         if (!action && debagList){
+          // Запишем ошибку
           debagList.push("125");
         }
         // Объявляем html узел крестика в главной области баннера
@@ -1907,10 +2257,14 @@ var PRESSTAKE_BANNER_CORE = {
       // Функция принимает событие
       removeBannerListCloseButtonEvent : function(action){
         var config = PRESSTAKE_BANNER_CORE.CONFIG;
+        // Если переключатель записи ошибок положителен то
         if (config.debag == true){
+          // объявляем листинг для записи ошибок
           var debagList = config.debagList;
         }
+        // Если нет функции действия и объявлен листинг для записи ошибок то
         if (!action && debagList){
+          // Запишем ошибку
           debagList.push("126");
         }
         // Объявление html узла крестика в листинге офферов

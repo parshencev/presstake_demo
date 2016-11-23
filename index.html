@@ -35,6 +35,7 @@
       var links = document.querySelectorAll("#nav a");
       for(var i = 0; i < links.length; i++){
         links[i].addEventListener("click", function(){
+          location.hash = this.href.match(/#.[aA-zZ]*/);
           location.reload();
         });
       }

@@ -96,8 +96,9 @@ var PRESSTAKE_BANNER_CORE = {
         view_model.scrollEvent();
         // Добовление событий на скролл
         view_controller.addWindowScrollEvent();
-        // Добавление событий на изменение зума
+        // Добавление события на скролл
         view_controller.addWindowScrollLeftEvent();
+        // Добавление событий на изменение зума
         view_controller.addWindowZoomEvent();
         // Добавление события на открытие списка офферов при клике
         view_controller.addBannerMainFirstEvent();
@@ -144,6 +145,8 @@ var PRESSTAKE_BANNER_CORE = {
         config.URL.PROTOCOL = config_model.getProtocol();
         // Записываем операционную систему клиента в конфигурации
         config.clientOS = config_model.getClientOS();
+        // Записываем тип устройства клиента в конфигурации
+        config_model.getDeviceType();
         // Записываем скролл клиента в конфигурации
         config_model.getScroll(config);
         // Записываем зум для баннера в конфигурации
@@ -1349,6 +1352,167 @@ var PRESSTAKE_BANNER_CORE = {
         //console.log((scrollTop * 100) / clientHeight);
         // Записываем процентный отступ от нижнего края псевдо видимой области экрана клиента для баннера
         config.bannerBottom = 0;
+      },
+      // Функция для получения типа устройства
+      getDeviceType : function(){
+        // Объявляем конфигурации, агент пользователя в нижнем регистре, функцию для поиска в агенте и объяект устройства
+        var config = PRESSTAKE_BANNER_CORE.CONFIG,
+            userAgent = window.navigator.userAgent.toLowerCase(),
+            // функция принимает строку для поиска в агенте пользователя
+            find = function (needle) {
+              // возвращает результат сравнения позиции найденного текста, если позиция не равна -1 то возваращает положительный результат, иначе отрицательный
+              return userAgent.indexOf(needle) !== -1;
+            },
+            device = {
+              // функция для определения операционной системы fx
+              fxos : function () {
+                // возвращает первый положительный резульат поисковых запросов в агенте или отрецательный 
+                return (find('(mobile;') || find('(tablet;')) && find('; rv:');
+              },
+              // функция для определения операционной системы blackberry
+              blackberry : function () {
+                // возвращает положительный результат если среди запросов есть положительный ответ или отрицательный если все отрицательные
+                return find('blackberry') || find('bb10') || find('rim');
+              },
+              // функция для определения операционной системы windows
+              windows : function () {
+                // возвращает результат выполнения поиска
+                return find('windows');
+              },
+              // функция для определения операционной системы android
+              android : function () {
+                // возвращает положительный результат если операционная система не windows и найден резульат поиска
+                return !device.windows() && find('android');
+              },
+              // функция для определения типа планшет под операционной системой fx
+              fxosTablet : function () {
+                // функция возвращает положительный результат если результаты запросов положительные или отрицательный если все ложные
+                return device.fxos() && find('tablet');
+              },
+              // функция для определения типа планшет пот операционной системой windows
+              windowsTablet : function () {
+                // возвращает положительный результат если положительные результаты поисковых запросов или отрецательный если ложные
+                return device.windows() && (find('touch') && !device.windowsPhone());
+              },
+              // функция для определения типа планшет под управлением операционной системы blackberry
+              blackberryTablet : function () {
+                // возвращает положительный результат если оба условия положительны или отрицательный если ложный хоть один
+                return device.blackberry() && find('tablet');
+              },
+              // функция для определения типа планшет под операционной системой android
+              androidTablet : function () {
+                // возвращает положительный результат если операционная система android и запрос положительный
+                return device.android() && !find('mobile');
+              },
+              // функция для определения устройства ipad
+              ipad : function () {
+                // возвращает положительный результат если запрос положительный или отрицалельный если ложный
+                return find('ipad');
+              },
+              // функция для определения meego
+              meego : function () {
+                // возвращает отрицательный результат если запрос ложный и положительный если запрос достоверный
+                return find('meego');
+              },
+              // функция для определения телефона с операционной системой fx
+              fxosPhone : function () {
+                // возваращает положительный результат если операционная система fx и тип мобильник
+                return device.fxos() && find('mobile');
+              },
+              // функция для определения телефона с операционной системой blackberry
+              blackberryPhone : function () {
+                // возваращает положительный результат если операционная система blackberry и тип не планшет
+                return device.blackberry() && !find('tablet');
+              },
+              // функция для определения телефона с операционной системой windows
+              windowsPhone : function () {
+                // возвращает положительный результат если операционная система windows и тип телефон
+                return device.windows() && find('phone');
+              },
+              // функция для определения устройства ipod
+              ipod : function () {
+                // возваращает положительный результат если находит ipod
+                return find('ipod');
+              },
+              // функция для определения устройства iphone
+              iphone : function () {
+                // возвращает положительный результат если операционная система не windows и если нашёл iphone
+                return !device.windows() && find('iphone');
+              },
+              // функция для определения телефона с операционной системой android
+              androidPhone : function () {
+                // возвращает положительный результат если опрационная система android и тип мобильник
+                return device.android() && find('mobile');
+              },
+              // функция для определения мобильный устройств
+              mobile : function () {
+                // возвращает положительный результат если телефон с android
+                return device.androidPhone() ||
+                       // или это iphone
+                       device.iphone() ||
+                       // или это ipod
+                       device.ipod() ||
+                       // или это телефон с windows 
+                       device.windowsPhone() || 
+                       // или это телефон с blackberry
+                       device.blackberryPhone() || 
+                       // или это телефон с fx
+                       device.fxosPhone() || 
+                       // или если это meego
+                       device.meego();
+              },
+              // функция для определения планшета
+              tablet : function () {
+                // возвращает положительный результат если это ipad
+                return device.ipad() || 
+                       // или планшет с android
+                       device.androidTablet() || 
+                       // или планшет с blackberry
+                       device.blackberryTablet() || 
+                       // или планшет с windows
+                       device.windowsTablet() || 
+                       // или планшет с fx
+                       device.fxosTablet();
+              },
+              // функция для определения персонального компьютера
+              desktop : function () {
+                // возваращает положительный результат если это не планшет и не телефон
+                return !device.tablet() && !device.mobile();
+              }
+            };
+        // если переключатель записи в листинг ошибок положительный то
+        if (config.debag == true){
+          // объявляем листинг для записи ошибок
+          var debagList = config.debagList;
+        }
+        // Если не удалось определить агент пользователя и объявлен листинг для записи ошибок то
+        if (!userAgent && debagList){
+          // записываем ошибку
+          debagList.push("129");
+        }
+        // если устройство не персональный компьютер то
+        if (!device.desktop()){
+          // если устройство не планшет то
+          if (!device.tablet()){
+            // если устройство не телефон то
+            if (!device.mobile()){
+              // записываем в конфигурацию категорию остольные
+              config.device = "other";
+            // если устройство телефон то
+            } else {
+              // записываем в конфигурации категорию телефон
+              config.device = "mobile";
+            }
+          // если устройство планшет то
+          } else {
+            // записываем в конфигурации категорию планшет
+            config.device = "tablet";
+          }
+        // если устройство персональный компьютер то
+        } else {
+          // записываем в конфигурации категорию персональный компьютер компьютер
+          config.device = "desktop";
+        }
       }
     },
     // Модель отрисовки и обработки событий
@@ -1455,9 +1619,6 @@ var PRESSTAKE_BANNER_CORE = {
         // Добавляем класс для контейнера офферов
         banner_list_scroll_list.classList.add("pt-banner-list");
 
-        // Добавляем класс для контейнера баннера из конфигураций
-        banner.classList.add(config.bannerClasses[response.templateType]);
-
         // Если нет классов в конфигурации и объявлен листинг для записи ошибок то
         if (!config.bannerClasses && debagList){
           // Запишем ошибку
@@ -1469,12 +1630,33 @@ var PRESSTAKE_BANNER_CORE = {
           debagList.push("85");
         }
 
+        // Добавляем класс для контейнера баннера из конфигураций
+        banner.classList.add(config.bannerClasses[response.templateType]);
+
         // добавляем текстовый узел для верхнего текста главной области баннера
         banner_main_text_top.innerHTML = "Лучшие цены в он-лайн магазинах";
         // добавляем текстовый узел для вернего текста при открытии листинга офферов для главной области баннера
         banner_main_text_top_open.innerHTML = "Посмотреть больше предложений";
-        // добавляем текстовый узел для среднего текста главной области баннера
-        banner_main_text_middle.innerHTML = "Где купить товары из этой статьи?";
+        
+        // Если тип отображения банера из запроса стандартный, либо гаджеты, либо одежда то
+        if (response.templateType == 0 || response.templateType == 5 || response.templateType == 2){
+          // добавляем текстовый узел для среднего текста главной области баннера
+          banner_main_text_middle.innerHTML = "Где купить товары из этой статьи?";
+        // Если тип отображения баннера из запроса книги то
+        } else if (response.templateType == 1){
+          // добавляем текстовый узел для среднего текста главной области баннера
+          banner_main_text_middle.innerHTML = "Где купить или скачать книгу из этой статьи?";
+        // Если тип отображения баннера из запроса фильмы то
+        } else if (response.templateType == 3){
+          // добавляем текстовый узел для среднего текста главной области баннера
+          banner_main_text_middle.innerHTML = "Где посмотреть фильм из этой статьи?";
+        // Если тип отображения баннера из запроса игры то
+        } else if (response.templateType == 4){
+          // добавляем текстовый узел для среднего текста главной области баннера
+          banner_main_text_middle.innerHTML = "Где скачать приложение из этой статьи?";
+        }
+
+        
         // добавляем url аттребут для среднего текста при открытии листинга офферов для главной области баннера
         banner_main_text_middle_open.href = "http://www.presstake.com/landing/";
         // добавляем текстовый узел для среднего текста при открытии листинга офферов для главной области баннера

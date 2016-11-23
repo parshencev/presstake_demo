@@ -2,8 +2,76 @@
   "status":"1",
   "data":[
     {
-      "id":"1231",
-      "name":"\u041d\u0430\u0443\u0448\u043d\u0438\u043a\u0438",
+      "id":"1",
+      "name":"Фантастические твари и где они обитают",
+      "sitid":"12312",
+      "image":"http:\/\/book2.me\/f\/classic.jpg",
+      "price":"123 \u0440.",
+      "on_sale":"1",
+      "linkName" : "simple.ru",
+      "itarget":{
+        "google_play":"0",
+        "appstore":"0"
+      },
+      "pl":{
+        "android":"1"
+      },
+      "tmpltype":"1"
+    },
+    {
+      "id":"1",
+      "name":"Фантастические твари и где они обитают",
+      "sitid":"12312",
+      "image":"http:\/\/book2.me\/f\/classic.jpg",
+      "price":"123 \u0440.",
+      "on_sale":"1",
+      "linkName" : "simple.ru",
+      "itarget":{
+        "google_play":"0",
+        "appstore":"0"
+      },
+      "pl":{
+        "android":"1"
+      },
+      "tmpltype":"1"
+    },
+    {
+      "id":"1",
+      "name":"Фантастические твари и где они обитают",
+      "sitid":"12312",
+      "image":"http:\/\/book2.me\/f\/classic.jpg",
+      "price":"123 \u0440.",
+      "on_sale":"1",
+      "linkName" : "simple.ru",
+      "itarget":{
+        "google_play":"0",
+        "appstore":"0"
+      },
+      "pl":{
+        "android":"1"
+      },
+      "tmpltype":"1"
+    },
+    {
+      "id":"1",
+      "name":"Фантастические твари и где они обитают",
+      "sitid":"12312",
+      "image":"http:\/\/book2.me\/f\/classic.jpg",
+      "price":"123 \u0440.",
+      "on_sale":"1",
+      "linkName" : "simple.ru",
+      "itarget":{
+        "google_play":"0",
+        "appstore":"0"
+      },
+      "pl":{
+        "android":"1"
+      },
+      "tmpltype":"1"
+    },
+    {
+      "id":"1",
+      "name":"Фантастические твари и где они обитают",
       "sitid":"12312",
       "image":"http:\/\/book2.me\/f\/classic.jpg",
       "price":"123 \u0440.",

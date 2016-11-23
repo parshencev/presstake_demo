@@ -1,26 +1,50 @@
 @font-face {
   font-family: Roboto;
-  src: url("../fonts/roboto-regular.woff2");
+  src: url("../fonts/roboto-regular.woff2") format('woff2'),
+       url("../fonts/roboto-regular.woff") format('woff'),
+       url("../fonts/roboto-regular.eot") format('eot'),
+       url("../fonts/roboto-regular.ttf") format('truetype'),
+       url("../fonts/roboto-regular.svg") format('svg');
 }
 @font-face {
   font-family: RobotoBold;
-  src: url("../fonts/roboto-bold.woff2");
+  src: url("../fonts/roboto-bold.woff2") format('woff2'),
+       url("../fonts/roboto-bold.woff") format('woff'),
+       url("../fonts/roboto-bold.eot") format('eot'),
+       url("../fonts/roboto-bold.ttf") format('truetype'),
+       url("../fonts/roboto-bold.svg") format('svg');
 }
 @font-face {
   font-family: RobotoCondensed;
-  src: url("../fonts/robotocondensed-regular.woff2");
+  src: url("../fonts/robotocondensed-regular.woff2") format('woff2'),
+       url("../fonts/robotocondensed-regular.woff") format('woff'),
+       url("../fonts/robotocondensed-regular.eot") format('eot'),
+       url("../fonts/robotocondensed-regular.ttf") format('truetype'),
+       url("../fonts/robotocondensed-regular.svg") format('svg');
 }
 @font-face {
   font-family: RobotoCondensedBold;
-  src: url("../fonts/robotocondensed-bold.woff2");
+  src: url("../fonts/robotocondensed-bold.woff2") format('woff2'),
+       url("../fonts/robotocondensed-bold.woff") format('woff'),
+       url("../fonts/robotocondensed-bold.eot") format('eot'),
+       url("../fonts/robotocondensed-bold.ttf") format('truetype'),
+       url("../fonts/robotocondensed-bold.svg") format('svg');    
 }
 @font-face {
   font-family: PTBold;
-  src: url("../fonts/pt_serif-web-bold.woff2");
+  src: url("../fonts/pt_serif-web-bold.woff2") format('woff2'),
+       url("../fonts/pt_serif-web-bold.woff") format('woff'),
+       url("../fonts/pt_serif-web-bold.eot") format('eot'),
+       url("../fonts/pt_serif-web-bold.ttf") format('truetype'),
+       url("../fonts/pt_serif-web-bold.svg") format('svg'); 
 }
 @font-face {
   font-family: RobotoBlack;
-  src: url("../fonts/roboto-black.woff2");
+  src: url("../fonts/roboto-black.woff2") format('woff2'),
+       url("../fonts/roboto-black.woff") format('woff'),
+       url("../fonts/roboto-black.eot") format('eot'),
+       url("../fonts/roboto-black.ttf") format('truetype'),
+       url("../fonts/roboto-black.svg") format('svg');
 }
 .pt-banner{
   position: fixed;
@@ -448,14 +472,14 @@
         .pt-banner-text-middle{
           font-size: 30px;
           line-height: 30px;
-          width: 264px;
+          width: 295px;
           font-family: RobotoCondensedBold;
         }
       }
       .pt-banner-link{
         width: 104px;
         height: 42px;
-        right: 139px;
+        right: 125px;
         top: 68px;
         background: #000;
         color: #fefefe;
@@ -504,20 +528,20 @@
   &.pt-banner-books{
     .pt-banner-main{
       background-image: url("../img/background_books.png");
-      background-position: right bottom;
+      background-position: ~"calc(100% + 27px)" bottom;
       .pt-banner-text-wrapper{
         .pt-banner-text-middle{
           font-family: PTBold;
           font-size: 30px;
           line-height: 30px;
-          width: 312px;
+          width: 361px;
         }
       }
       .pt-banner-link {
         width: 124px;
         height: 42px;
-        right: 116px;
-        top: 78px;
+        right: 68px;
+        top: 64px;
         line-height: 42px;
         font-size: 28px;
         font-family: RobotoBold;
@@ -590,14 +614,14 @@
       .pt-banner-text-middle{
         font-family: RobotoBold;
         font-size: 31px;
-        width: 300px;
+        width: 372px;
         line-height: 32px;
       }
     }
     .pt-banner-link{
       width: 104px;
       height: 42px;
-      right: 113px;
+      right: 52px;
       top: 63px;
       font-family: RobotoBold;
       font-size: 25px;

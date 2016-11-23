@@ -1340,8 +1340,12 @@ var PRESSTAKE_BANNER_CORE = {
           // Запишем ошибку
           debagList.push("81");
         }
-        // Записываем процент отступа от левого края для баннера
-        config.bannerLeft = (scrollLeft * 100) / clientWidth;
+        if (config.clientOS != "ios"){
+          // Записываем процент отступа от левого края для баннера
+          config.bannerLeft = (scrollLeft * 100) / clientWidth;
+        } else {
+          config.bannerLeft = 0;
+        }
       },
       // Функция для получения отступа от нижнего края псевдо видимого экрана клиента
       getBannerBottom : function(){
@@ -2168,8 +2172,8 @@ var PRESSTAKE_BANNER_CORE = {
           // Запишем ошибку
           debagList.push("108");
         }
-        // если скролл страницы больше 25 процентов и операционная система клиента не в составе категории другие то
-        if (config.scroll > 25 && config.clientOS != "other") {
+        // если скролл страницы больше 25 процентов и устройство телефон
+        if (config.scroll > 25 && config.device == "mobile") {
           // Вызываем функцию открытия баннера
           PRESSTAKE_BANNER_CORE.CONTROLLERS.VIEW_CONTROLLER.showBanner();
         }

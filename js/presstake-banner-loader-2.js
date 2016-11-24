@@ -1071,7 +1071,12 @@ var PRESSTAKE_BANNER_CORE = {
               debagList.push("56");
             }
             // Проверяем есть ли в ответе сервера свойство статуса
-            if (response.hasOwnProperty("status")) {
+            if (response.hasOwnProperty("status") || response.hasOwnProperty("requestStatus")) {
+              // Если нет свойства статуса то
+              if (!response.hasOwnProperty("status")){
+                // проеверяем другое название свойства
+                response.status = response.requestStatus;
+              }
               // Если есть то проверяем положительно ли оно
               if (response.status == config.status.STATUS_OK) {
                 // Если положительно то вызываем метод успешного соединения с ответом сервера и идентификатором интервала
@@ -1139,27 +1144,27 @@ var PRESSTAKE_BANNER_CORE = {
           // Если нет в конфигурациях ограничителя повторейний запросов и объявлен листинг записи ошибок то
           if (!config.repeatCounter && debagList) {
             // Запишем ошибку
-            debagList.push("65("+intervalId+", "+tick+")");
+            debagList.push("65("+intervalId+", "+this.tick+")");
           }
           // Если не объявлен путь и объявлен листинг для записи ошибок то
           if (!url && debagList) {
             // Запишем ошибку
-            debagList.push("66("+intervalId+", "+tick+")");
+            debagList.push("66("+intervalId+", "+this.tick+")");
           }
           // Если не объявлена функция на положительный ответ сервера и объявлен листинг для записи ошибок то
           if (!callback && debagList) {
             // Запишем ошибку
-            debagList.push("67("+intervalId+", "+tick+")");
+            debagList.push("67("+intervalId+", "+this.tick+")");
           }
           // Если не объявлена функция на отрицательный ответ сервера и объявлен листинг для записи ошибок то
           if (!callbackError && debagList) {
             // Запишем ошибку
-            debagList.push("68("+intervalId+", "+tick+")");
+            debagList.push("68("+intervalId+", "+this.tick+")");
           }
           // Если нет ограничителя времени повтора запроса в конфигурациях и объявлен листинг для записи обшибок то
           if (!config.repeatTimeout && debagList){
             // Запишем ошибку
-            debagList.push("69("+intervalId+", "+tick+")"); 
+            debagList.push("69("+intervalId+", "+this.tick+")"); 
           }
           // Вызываем ассихронную функцию и передаём в неё путь, удачную функцию, неудачную, идентификатор интервала
           ajax_function(url, callback, callbackError, intervalId);
@@ -2172,7 +2177,6 @@ var PRESSTAKE_BANNER_CORE = {
           // Запишем ошибку
           debagList.push("108");
         }
-        console.log(config.scroll);
         // если скролл страницы больше 20 процентов и устройство не персональный компьютер
         if (config.scroll > 20 && config.device != "desktop") {
           // Вызываем функцию открытия баннера
@@ -2497,15 +2501,6 @@ var PRESSTAKE_BANNER_CORE = {
   }
 };
 
-// window.addEventListener("DOMContentLoaded", function(){
-//   PRESSTAKE_BANNER_CORE.init({
-//     URL: {
-//       TARGET_URL : window.location.host + "/",
-//       PASRSE_URL : "requests/parse",
-//       APPS_URL : "requests/apps",
-//       STAT_URL : "requests/stat",
-//       TRACKING_URL : "requests/track",
-//       CSS_URL : "css/style.css"
-//     }
-//   });
-// });
+window.addEventListener("DOMContentLoaded", function(){
+  PRESSTAKE_BANNER_CORE.init();
+});

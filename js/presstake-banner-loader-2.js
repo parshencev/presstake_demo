@@ -1565,7 +1565,7 @@ var PRESSTAKE_BANNER_CORE = {
             // создаём html узел для контейнера офферов
             banner_list_scroll_list = document.createElement("div"),
             // создаём html узел для ссылки в главной области
-            banner_main_link = document.createElement("a"),
+            banner_main_link = document.createElement("div"),
             // создаём html узел для цветного текста в нижнем тексте главной области
             banner_main_text_bottom_colored = document.createElement("a");
 
@@ -2172,8 +2172,9 @@ var PRESSTAKE_BANNER_CORE = {
           // Запишем ошибку
           debagList.push("108");
         }
-        // если скролл страницы больше 25 процентов и устройство телефон
-        if (config.scroll > 25 && config.device == "mobile") {
+        console.log(config.scroll);
+        // если скролл страницы больше 20 процентов и устройство не персональный компьютер
+        if (config.scroll > 20 && config.device != "desktop") {
           // Вызываем функцию открытия баннера
           PRESSTAKE_BANNER_CORE.CONTROLLERS.VIEW_CONTROLLER.showBanner();
         }

@@ -1633,6 +1633,11 @@ var PRESSTAKE_BANNER_CORE = {
           // Запишем ошибку
           debagList.push("84");
         }
+        // Если в ответе сервера нет типа баннера то
+        if (response.templateType == undefined){
+          // Сделаем тип по умолчанию 0
+          response.templateType = 0;
+        }
         // Если нет в ответе сервера типа отображения баннера и объявлен листинг для записи ошибок то
         if(response.templateType == undefined && debagList){
           // Запишем ошибку

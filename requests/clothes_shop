@@ -3,10 +3,78 @@
   "data":[
     {
       "id":"1231",
-      "name":"\u041d\u0430\u0443\u0448\u043d\u0438\u043a\u0438",
+      "name":"Брюки домашние",
       "sitid":"12312",
-      "image":"http:\/\/book2.me\/f\/classic.jpg",
-      "price":"123 \u0440.",
+      "image":"img/simple/clothes/bruki.jpg",
+      "price":"3199 \u0440.",
+      "on_sale":"1",
+      "linkName" : "simple.ru",
+      "itarget":{
+        "google_play":"0",
+        "appstore":"0"
+      },
+      "pl":{
+        "android":"1"
+      },
+      "tmpltype":"1"
+    },
+    {
+      "id":"1231",
+      "name":"Куртка горнолыжная Ida Jacket",
+      "sitid":"12312",
+      "image":"img/simple/clothes/kurtka.jpg",
+      "price":"9599 \u0440.",
+      "on_sale":"1",
+      "linkName" : "simple.ru",
+      "itarget":{
+        "google_play":"0",
+        "appstore":"0"
+      },
+      "pl":{
+        "android":"1"
+      },
+      "tmpltype":"1"
+    },
+    {
+      "id":"1231",
+      "name":"Жилет утепленный",
+      "sitid":"12312",
+      "image":"img/simple/clothes/lgbt.jpg",
+      "price":"1499 \u0440.",
+      "on_sale":"1",
+      "linkName" : "simple.ru",
+      "itarget":{
+        "google_play":"0",
+        "appstore":"0"
+      },
+      "pl":{
+        "android":"1"
+      },
+      "tmpltype":"1"
+    },
+    {
+      "id":"1231",
+      "name":"Халат домашний",
+      "sitid":"12312",
+      "image":"img/simple/clothes/pidgama.jpg",
+      "price":"3299 \u0440.",
+      "on_sale":"1",
+      "linkName" : "simple.ru",
+      "itarget":{
+        "google_play":"0",
+        "appstore":"0"
+      },
+      "pl":{
+        "android":"1"
+      },
+      "tmpltype":"1"
+    },
+    {
+      "id":"1231",
+      "name":"Платье домашнее",
+      "sitid":"12312",
+      "image":"img/simple/clothes/plate.jpeg",
+      "price":"11000 \u0440.",
       "on_sale":"1",
       "linkName" : "simple.ru",
       "itarget":{

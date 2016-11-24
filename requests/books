@@ -3,10 +3,78 @@
   "data":[
     {
       "id":"1231",
-      "name":"\u041d\u0430\u0443\u0448\u043d\u0438\u043a\u0438",
+      "name":"ЕГЭ Русский язык",
       "sitid":"12312",
-      "image":"http:\/\/book2.me\/f\/classic.jpg",
-      "price":"123 \u0440.",
+      "image":"img/simple/books/ege.jpg",
+      "price":"500 \u0440.",
+      "on_sale":"1",
+      "linkName" : "simple.ru",
+      "itarget":{
+        "google_play":"0",
+        "appstore":"0"
+      },
+      "pl":{
+        "android":"1"
+      },
+      "tmpltype":"1"
+    },
+    {
+      "id":"1231",
+      "name":"Гравити фолз",
+      "sitid":"12312",
+      "image":"img/simple/books/gravity.jpg",
+      "price":"1500 \u0440.",
+      "on_sale":"1",
+      "linkName" : "simple.ru",
+      "itarget":{
+        "google_play":"0",
+        "appstore":"0"
+      },
+      "pl":{
+        "android":"1"
+      },
+      "tmpltype":"1"
+    },
+    {
+      "id":"1231",
+      "name":"Исскуство оскорблять",
+      "sitid":"12312",
+      "image":"img/simple/books/iskustvo.jpg",
+      "price":"2500 \u0440.",
+      "on_sale":"1",
+      "linkName" : "simple.ru",
+      "itarget":{
+        "google_play":"0",
+        "appstore":"0"
+      },
+      "pl":{
+        "android":"1"
+      },
+      "tmpltype":"1"
+    },
+    {
+      "id":"1231",
+      "name":"Как работают над сценарием",
+      "sitid":"12312",
+      "image":"img/simple/books/kak.jpg",
+      "price":"3000 \u0440.",
+      "on_sale":"1",
+      "linkName" : "simple.ru",
+      "itarget":{
+        "google_play":"0",
+        "appstore":"0"
+      },
+      "pl":{
+        "android":"1"
+      },
+      "tmpltype":"1"
+    },
+    {
+      "id":"1231",
+      "name":"Пиши, сокращай",
+      "sitid":"12312",
+      "image":"img/simple/books/pishi.jpg",
+      "price":"1000 \u0440.",
       "on_sale":"1",
       "linkName" : "simple.ru",
       "itarget":{

@@ -3,10 +3,78 @@
   "data":[
     {
       "id":"1231",
-      "name":"\u041d\u0430\u0443\u0448\u043d\u0438\u043a\u0438",
+      "name":"Акваферма AquaFarm",
       "sitid":"12312",
-      "image":"http:\/\/book2.me\/f\/classic.jpg",
-      "price":"123 \u0440.",
+      "image":"img/simple/gadgets/aqua.jpg",
+      "price":"4900 \u0440.",
+      "on_sale":"1",
+      "linkName" : "simple.ru",
+      "itarget":{
+        "google_play":"0",
+        "appstore":"0"
+      },
+      "pl":{
+        "android":"1"
+      },
+      "tmpltype":"1"
+    },
+    {
+      "id":"1231",
+      "name":"Биван оригинальный",
+      "sitid":"12312",
+      "image":"img/simple/gadgets/bivan.jpg",
+      "price":"2990 \u0440.",
+      "on_sale":"1",
+      "linkName" : "simple.ru",
+      "itarget":{
+        "google_play":"0",
+        "appstore":"0"
+      },
+      "pl":{
+        "android":"1"
+      },
+      "tmpltype":"1"
+    },
+    {
+      "id":"1231",
+      "name":"Генетический тест Atlas",
+      "sitid":"12312",
+      "image":"img/simple/gadgets/gentest.jpg",
+      "price":"29900 \u0440.",
+      "on_sale":"1",
+      "linkName" : "simple.ru",
+      "itarget":{
+        "google_play":"0",
+        "appstore":"0"
+      },
+      "pl":{
+        "android":"1"
+      },
+      "tmpltype":"1"
+    },
+    {
+      "id":"1231",
+      "name":"Минималистичный кошелек ZAVTRA",
+      "sitid":"12312",
+      "image":"img/simple/gadgets/kashel.jpg",
+      "price":"1890 \u0440.",
+      "on_sale":"1",
+      "linkName" : "simple.ru",
+      "itarget":{
+        "google_play":"0",
+        "appstore":"0"
+      },
+      "pl":{
+        "android":"1"
+      },
+      "tmpltype":"1"
+    },
+    {
+      "id":"1231",
+      "name":"Рюкзак XD Design Bobby",
+      "sitid":"12312",
+      "image":"img/simple/gadgets/rukzak.jpg",
+      "price":"7990 \u0440.",
       "on_sale":"1",
       "linkName" : "simple.ru",
       "itarget":{

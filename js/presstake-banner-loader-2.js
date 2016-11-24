@@ -1919,7 +1919,7 @@ var PRESSTAKE_BANNER_CORE = {
               // объявление html узла для вступления ресурса
               banner_list_header_source_before = document.createElement("div"),
               // объявление html узла для названия ресурса
-              banner_list_header_source_after = document.createElement("div"),
+              banner_list_header_source_after = document.createElement("a"),
               // объявление html узла для селекора в шапке
               banner_list_header_selector_selector = document.createElement("select");
 
@@ -1953,6 +1953,9 @@ var PRESSTAKE_BANNER_CORE = {
 
           // добавление текстового узла для ресурса
           banner_list_header_source_after.innerHTML = response.shipperName;
+          // добавление ссылки на яндекс маркет
+          banner_list_header_source_after.href = "https://market.yandex.ru";
+
 
           // объявляем html узел для опции селектора по умолчанию
           var banner_list_header_selector_selector_option = document.createElement("option");
@@ -2506,6 +2509,6 @@ var PRESSTAKE_BANNER_CORE = {
   }
 };
 
-window.addEventListener("DOMContentLoaded", function(){
-  PRESSTAKE_BANNER_CORE.init();
-});
+// window.addEventListener("DOMContentLoaded", function(){
+//   PRESSTAKE_BANNER_CORE.init();
+// });

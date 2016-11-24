@@ -3,10 +3,61 @@
   "data":[
     {
       "id":"1",
-      "name":"Фантастические твари и где они обитают",
+      "name":"Дама Пик",
       "sitid":"12312",
-      "image":"http:\/\/book2.me\/f\/classic.jpg",
-      "price":"123 \u0440.",
+      "image":"img/simple/films/dama.jpg",
+      "price":"1500 \u0440.",
+      "on_sale":"1",
+      "linkName" : "simple.ru",
+      "itarget":{
+        "google_play":"0",
+        "appstore":"0"
+      },
+      "pl":{
+        "android":"1"
+      },
+      "tmpltype":"1"
+    },
+    {
+      "id":"1",
+      "name":"Зачинщики",
+      "sitid":"12312",
+      "image":"img/simple/films/lymis.jpg",
+      "price":"1000 \u0440.",
+      "on_sale":"1",
+      "linkName" : "simple.ru",
+      "itarget":{
+        "google_play":"0",
+        "appstore":"0"
+      },
+      "pl":{
+        "android":"1"
+      },
+      "tmpltype":"1"
+    },
+    {
+      "id":"1",
+      "name":"Доктор Стрэндж",
+      "sitid":"12312",
+      "image":"img/simple/films/strang.jpg",
+      "price":"1200 \u0440.",
+      "on_sale":"1",
+      "linkName" : "simple.ru",
+      "itarget":{
+        "google_play":"0",
+        "appstore":"0"
+      },
+      "pl":{
+        "android":"1"
+      },
+      "tmpltype":"1"
+    },
+    {
+      "id":"1",
+      "name":"Варкрафт",
+      "sitid":"12312",
+      "image":"img/simple/films/varcraft.jpg",
+      "price":"500 \u0440.",
       "on_sale":"1",
       "linkName" : "simple.ru",
       "itarget":{
@@ -22,59 +73,8 @@
       "id":"1",
       "name":"Фантастические твари и где они обитают",
       "sitid":"12312",
-      "image":"http:\/\/book2.me\/f\/classic.jpg",
-      "price":"123 \u0440.",
-      "on_sale":"1",
-      "linkName" : "simple.ru",
-      "itarget":{
-        "google_play":"0",
-        "appstore":"0"
-      },
-      "pl":{
-        "android":"1"
-      },
-      "tmpltype":"1"
-    },
-    {
-      "id":"1",
-      "name":"Фантастические твари и где они обитают",
-      "sitid":"12312",
-      "image":"http:\/\/book2.me\/f\/classic.jpg",
-      "price":"123 \u0440.",
-      "on_sale":"1",
-      "linkName" : "simple.ru",
-      "itarget":{
-        "google_play":"0",
-        "appstore":"0"
-      },
-      "pl":{
-        "android":"1"
-      },
-      "tmpltype":"1"
-    },
-    {
-      "id":"1",
-      "name":"Фантастические твари и где они обитают",
-      "sitid":"12312",
-      "image":"http:\/\/book2.me\/f\/classic.jpg",
-      "price":"123 \u0440.",
-      "on_sale":"1",
-      "linkName" : "simple.ru",
-      "itarget":{
-        "google_play":"0",
-        "appstore":"0"
-      },
-      "pl":{
-        "android":"1"
-      },
-      "tmpltype":"1"
-    },
-    {
-      "id":"1",
-      "name":"Фантастические твари и где они обитают",
-      "sitid":"12312",
-      "image":"http:\/\/book2.me\/f\/classic.jpg",
-      "price":"123 \u0440.",
+      "image":"img/simple/films/vari.jpg",
+      "price":"350 \u0440.",
       "on_sale":"1",
       "linkName" : "simple.ru",
       "itarget":{

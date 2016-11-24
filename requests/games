@@ -3,10 +3,78 @@
   "data":[
     {
       "id":"1231",
-      "name":"\u041d\u0430\u0443\u0448\u043d\u0438\u043a\u0438",
+      "name":"DRAGON BALL Z DOKKAN BATTLE",
       "sitid":"12312",
-      "image":"http:\/\/book2.me\/f\/classic.jpg",
-      "price":"123 \u0440.",
+      "image":"img/simple/apps/balls.png",
+      "price":"БЕСПЛАТНО",
+      "on_sale":"1",
+      "linkName" : "simple.ru",
+      "itarget":{
+        "google_play":"0",
+        "appstore":"0"
+      },
+      "pl":{
+        "android":"1"
+      },
+      "tmpltype":"1"
+    },
+    {
+      "id":"1231",
+      "name":"Bubble Shooter 2016",
+      "sitid":"12312",
+      "image":"img/simple/apps/bubble.png",
+      "price":"БЕСПЛАТНО",
+      "on_sale":"1",
+      "linkName" : "simple.ru",
+      "itarget":{
+        "google_play":"0",
+        "appstore":"0"
+      },
+      "pl":{
+        "android":"1"
+      },
+      "tmpltype":"1"
+    },
+    {
+      "id":"1231",
+      "name":"Mad Race",
+      "sitid":"12312",
+      "image":"img/simple/apps/mad.png",
+      "price":"БЕСПЛАТНО",
+      "on_sale":"1",
+      "linkName" : "simple.ru",
+      "itarget":{
+        "google_play":"0",
+        "appstore":"0"
+      },
+      "pl":{
+        "android":"1"
+      },
+      "tmpltype":"1"
+    },
+    {
+      "id":"1231",
+      "name":"Пиратская история: Сокровища",
+      "sitid":"12312",
+      "image":"img/simple/apps/pirat.png",
+      "price":"БЕСПЛАТНО",
+      "on_sale":"1",
+      "linkName" : "simple.ru",
+      "itarget":{
+        "google_play":"0",
+        "appstore":"0"
+      },
+      "pl":{
+        "android":"1"
+      },
+      "tmpltype":"1"
+    },
+    {
+      "id":"1231",
+      "name":"Run Hopy Run",
+      "sitid":"12312",
+      "image":"img/simple/apps/run.png",
+      "price":"БЕСПЛАТНО",
       "on_sale":"1",
       "linkName" : "simple.ru",
       "itarget":{

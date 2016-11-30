@@ -413,6 +413,10 @@
   outline: none;
   cursor: pointer;
 }
+.pt-banner.pt-banner-center {
+  right: 0;
+  margin: auto;
+}
 .pt-banner.pt-banner-clothes_shop.pt-banner-open,
 .pt-banner.pt-banner-gadgets.pt-banner-open {
   height: 618px;

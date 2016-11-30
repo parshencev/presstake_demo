@@ -85,7 +85,8 @@ var PRESSTAKE_BANNER_CORE = {
       init_content : function () {
         // объявление контроллера отрисовки и модели отрисовки
         var view_controller = PRESSTAKE_BANNER_CORE.CONTROLLERS.VIEW_CONTROLLER,
-            view_model = PRESSTAKE_BANNER_CORE.MODELS.VIEW_MODEL;
+            view_model = PRESSTAKE_BANNER_CORE.MODELS.VIEW_MODEL,
+            config = PRESSTAKE_BANNER_CORE.CONFIG;
         // подключение стилей
         view_controller.createCss();
         // формирование html узлов банера
@@ -106,6 +107,9 @@ var PRESSTAKE_BANNER_CORE = {
         view_controller.addBannerMainCloseButtonEvent();
         // Добавление события на закрытие списка офферов при клике на крестик
         view_controller.addBannerListCloseButtonEvent();
+        if (config.device == "desktop"){
+          view_controller.addBannerListScrollEvent();
+        }
       },
       // Функция для получения всех данных для отображения и серверной обработки страницы клиента
       init_banner : function () {
@@ -147,6 +151,8 @@ var PRESSTAKE_BANNER_CORE = {
         config.clientOS = config_model.getClientOS();
         // Записываем тип устройства клиента в конфигурации
         config_model.getDeviceType();
+        // Записываем ориентацию устройства
+        config_model.getDeviceOrientation();
         // Записываем скролл клиента в конфигурации
         config_model.getScroll(config);
         // Записываем зум для баннера в конфигурации
@@ -303,6 +309,14 @@ var PRESSTAKE_BANNER_CORE = {
         // вызывается функция добавления события на крестик в углу листинга офферов, в которую передаём события скривания листинга
         view_model.addBannerListCloseButtonEvent(view_model.bannerListCloseButtonEvent);
       },
+      addBannerListScrollEvent : function(){
+        var view_model = PRESSTAKE_BANNER_CORE.MODELS.VIEW_MODEL;
+        view_model.addBannerListScrollEvent(view_model.bannerListScrollEvent);
+      },
+      removeBannerListScrollEvent : function(){
+        var view_model = PRESSTAKE_BANNER_CORE.MODELS.VIEW_MODEL;
+        view_model.removeBannerListScrollEvent(view_model.bannerListScrollEvent);
+      },
       // функция удаления события скрывания листинга офферов с крестика в углу листинга офферов
       removeBannerListCloseButtonEvent : function(){
         // объявляется модель отрисовки
@@ -351,6 +365,8 @@ var PRESSTAKE_BANNER_CORE = {
         view_model.addWindowZoomEvent(config_model.getBannerLeft);
         // объявляется функция добавления событий на зумирование экрана, в которую передаётся событие записи нижнего отступа для баннера
         view_model.addWindowZoomEvent(config_model.getBannerBottom);
+        // запись ориентации устройства
+        view_model.addWindowZoomEvent(config_model.getDeviceOrientation);
         // объявляется функция добавления событий на зумирование экрана, в которую передаётся событие подговнки пропорций баннера
         view_model.addWindowZoomEvent(view_model.zoomEvent);
       },
@@ -365,6 +381,8 @@ var PRESSTAKE_BANNER_CORE = {
         view_model.removeWindowZoomEvent(config_model.getBannerBottom);
         // вызывается функция удаления событий на зум окна, в которую передаётся событие записи левого отступа для баннера
         view_model.removeWindowZoomEvent(config_model.getBannerLeft);
+        // удаление ориентации устройства
+        view_model.removeWindowZoomEvent(config_model.getDeviceOrientation);
         // вызывается функция удаления событий на зум окна, в которую передаётся событие подгона пропорций баннера
         view_model.removeWindowZoomEvent(view_model.zoomEvent);
       }
@@ -1362,6 +1380,22 @@ var PRESSTAKE_BANNER_CORE = {
         // Записываем процентный отступ от нижнего края псевдо видимой области экрана клиента для баннера
         config.bannerBottom = 0;
       },
+      // Функция для получения ориентации устройства
+      getDeviceOrientation : function(){
+        // Объявляем конфигурации , ширину окна, высоту окна
+        var config = PRESSTAKE_BANNER_CORE.CONFIG,
+            width = window.innerWidth,
+            height = window.innerHeight;
+        // если соотношение высоты и ширины больше 1 то
+        if ((height / width) > 1){
+          // запишем в конфигурации что ориентация горизонтальная
+          config.deviceOrientation = "portrait";
+        // Иначе
+        } else {
+          // запишем в конфигурации что ориентация вертикальная
+          config.deviceOrientation = "landscape";
+        }
+      },
       // Функция для получения типа устройства
       getDeviceType : function(){
         // Объявляем конфигурации, агент пользователя в нижнем регистре, функцию для поиска в агенте и объяект устройства
@@ -1625,6 +1659,7 @@ var PRESSTAKE_BANNER_CORE = {
         banner_list_close.id = "pt-banner-close__list";
         // Добавляем класс для области с горизонтальным скроллом в контейнере листинга офферов
         banner_list_scroll.classList.add("pt-banner-list-scroll-wrapper");
+        banner_list_scroll.id = "pt-banner-scroll";
         // Добавляем класс для контейнера офферов
         banner_list_scroll_list.classList.add("pt-banner-list");
 
@@ -1969,6 +2004,11 @@ var PRESSTAKE_BANNER_CORE = {
             // Запишем ошибку
             debagList.push("98");
           }
+          if (!response.geo.name){
+            response.geo = {
+              name : "Москва"
+            };
+          }
 
           // Добавляем название города
           banner_list_header_selector_selector_option.innerHTML = response.geo.name;
@@ -2186,7 +2226,7 @@ var PRESSTAKE_BANNER_CORE = {
           debagList.push("108");
         }
         // если скролл страницы больше 20 процентов и устройство не персональный компьютер
-        if (config.scroll > 20 && config.device != "desktop") {
+        if (config.scroll > 20) {
           // Вызываем функцию открытия баннера
           PRESSTAKE_BANNER_CORE.CONTROLLERS.VIEW_CONTROLLER.showBanner();
         }
@@ -2211,15 +2251,18 @@ var PRESSTAKE_BANNER_CORE = {
           // Записываем ошибку
           debagList.push("128");
         }
-        // Добавлем в стили позиционирование по левому краю из конфигураций + %
-        banner.style.left = config.bannerLeft + "%";
+        if (window.innerWidth < 700) {
+          // Добавлем в стили позиционирование по левому краю из конфигураций + %
+          banner.style.left = config.bannerLeft + "%";
+        }
       },
       // Функция которая срабатывает при зумировании страницы
       // Функция принимает конфигурации
       zoomEvent : function (config){
         // Объявляются конфигурации и html узел баннера
         var config = PRESSTAKE_BANNER_CORE.CONFIG,
-            banner = document.getElementById(config.bannerSpaceID);
+            banner = document.getElementById(config.bannerSpaceID),
+            windowWidth = window.innerWidth;
         // Если переключатель записи листинга ошибок положителен то
         if (config.debag == true){
           // объявляем листинг для записи ошибок
@@ -2240,12 +2283,21 @@ var PRESSTAKE_BANNER_CORE = {
           // Запишем ошибку
           debagList.push("111");
         }
-        // Добавление зума в стили баннера из конфигураций
+        if (windowWidth > 700 && config.deviceOrientation == "landscape"){
+          banner.style.zoom = .7;
+          banner.style.left = 0;
+          banner.classList.add("pt-banner-center"); 
+        } else {
+          banner.style.zoom = config.zoom;
+          banner.style.left = config.bannerLeft + "%";
+          banner.classList.remove("pt-banner-center");
+        }
+        /*// Добавление зума в стили баннера из конфигураций
         banner.style.zoom = config.zoom;
         // Добавление отступа слева в стили баннера из конфигураций + %
         banner.style.left = config.bannerLeft + "%";
         // Добавление отступа снизу в стили баннера из конфигураций + %
-        banner.style.bottom = config.bannerBottom + "%";
+        banner.style.bottom = config.bannerBottom + "%";*/
       },
       // Функция для открытия листинга офферов при клике на главную область баннера
       // Функция принимает событие
@@ -2318,6 +2370,11 @@ var PRESSTAKE_BANNER_CORE = {
       bannerListCloseButtonEvent : function(){
         // Закрываем листинг офферов
         PRESSTAKE_BANNER_CORE.CONTROLLERS.VIEW_CONTROLLER.closeList();
+      },
+      bannerListScrollEvent : function(event){
+        event = event || window.event;
+        var dom = document.getElementById("pt-banner-scroll");
+        dom.scrollLeft += event.deltaY;
       },
       // Функция для добавления события на скролл
       // Функция принимает событие
@@ -2411,6 +2468,14 @@ var PRESSTAKE_BANNER_CORE = {
         var button = document.getElementById("pt-banner-close__list");
         // Добавление события на клик
         button.addEventListener("click", action);
+      },
+      addBannerListScrollEvent : function (action){
+        var dom = document.getElementById("pt-banner-scroll");
+        dom.addEventListener("wheel", action);
+      },
+      removeBannerListScrollEvent : function(action){
+        var dom = document.getElementById("pt-banner-scroll");
+        dom.removeEventListener("wheel", action);
       },
       // Функция для удаления события при скроллинге
       // Функция принимает событие

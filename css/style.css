@@ -150,7 +150,7 @@
   color: #4d4d4d;
 }
 .pt-banner .pt-banner-list-wrapper .pt-banner-list-scroll-wrapper {
-  overflow-x: scroll;
+  overflow-x: hidden;
   overflow-y: hidden;
   padding-bottom: 20px;
   width: 100%;

@@ -97,6 +97,11 @@ var PRESSTAKE_BANNER_CORE = {
         view_model.scrollEvent();
         // Добовление событий на скролл
         view_controller.addWindowScrollEvent();
+        view_controller.addBannerListTouchStartEvent();
+        view_controller.addBannerListTouchMoveEvent();
+        view_controller.addBannerListMouseDownEvent();
+        view_controller.addDocumentMouseMoveEvent();
+        view_controller.addDocumentMouseUpEvent();
         // Добавление события на скролл
         view_controller.addWindowScrollLeftEvent();
         // Добавление событий на изменение зума
@@ -312,6 +317,46 @@ var PRESSTAKE_BANNER_CORE = {
       addBannerListScrollEvent : function(){
         var view_model = PRESSTAKE_BANNER_CORE.MODELS.VIEW_MODEL;
         view_model.addBannerListScrollEvent(view_model.bannerListScrollEvent);
+      },
+      addBannerListTouchStartEvent : function(){
+        var view_model = PRESSTAKE_BANNER_CORE.MODELS.VIEW_MODEL;
+        view_model.addBannerListTouchStartEvent(view_model.bannerListTouchStartEvent);
+      },
+      addBannerListTouchMoveEvent : function(){
+        var view_model = PRESSTAKE_BANNER_CORE.MODELS.VIEW_MODEL;
+        view_model.addBannerListTouchMoveEvent(view_model.bannerListTouchMoveEvent);
+      },
+      addBannerListMouseDownEvent : function(){
+        var view_model = PRESSTAKE_BANNER_CORE.MODELS.VIEW_MODEL;
+        view_model.addBannerListMouseDownEvent(view_model.bannerListMouseDownEvent);
+      },
+      addDocumentMouseUpEvent : function(){
+        var view_model = PRESSTAKE_BANNER_CORE.MODELS.VIEW_MODEL;
+        view_model.addDocumentMouseUpEvent(view_model.documentMouseUpEvent);
+      },
+      addDocumentMouseMoveEvent : function(){
+        var view_model = PRESSTAKE_BANNER_CORE.MODELS.VIEW_MODEL;
+        view_model.addDocumentMouseMoveEvent(view_model.documentMouseMoveEvent);
+      },
+      removeBannerListTouchMoveEvent : function(){
+        var view_model = PRESSTAKE_BANNER_CORE.MODELS.VIEW_MODEL;
+        view_model.removeBannerListTouchMoveEvent(view_model.bannerListTouchMoveEvent);
+      },
+      removeBannerListTouchStartEvent : function(){
+        var view_model = PRESSTAKE_BANNER_CORE.MODELS.VIEW_MODEL;
+        view_model.removeBannerListTouchStartEvent(view_model.bannerListTouchStartEvent);
+      },
+      removeBannerListMouseDownEvenet : function(){
+        var view_model = PRESSTAKE_BANNER_CORE.MODELS.VIEW_MODEL;
+        view_model.removeBannerListMouseDownEvenet(view_model.bannerListMouseDownEvent);
+      },
+      removeDocumentMouseMoveEvent : function(){
+        var view_model = PRESSTAKE_BANNER_CORE.MODELS.VIEW_MODEL;
+        view_model.removeDocumentMouseMoveEvent(view_model.documentMouseMoveEvent);
+      },
+      removeDocumentMouseUpEvent : function(){
+        var view_model = PRESSTAKE_BANNER_CORE.MODELS.VIEW_MODEL;
+        view_model.removeDocumentMouseUpEvent(view_model.documentMouseUpEvent);
       },
       removeBannerListScrollEvent : function(){
         var view_model = PRESSTAKE_BANNER_CORE.MODELS.VIEW_MODEL;
@@ -1828,9 +1873,10 @@ var PRESSTAKE_BANNER_CORE = {
             // Запишем ошибку
             debagList.push("90("+itemKey+")");
           }
-
-          // Добавляем текстовый узел в ссылку
-          banner_list_scroll_list_item_link.innerHTML = item.linkName;
+          if (item.hasOwnProperty("linkName")){
+            // Добавляем текстовый узел в ссылку
+            banner_list_scroll_list_item_link.innerHTML = item.linkName;  
+          }
           
           // Если нет имени оффера и объявлен листинг для записи ошибок то
           if (!item.name && debagList){
@@ -1985,12 +2031,13 @@ var PRESSTAKE_BANNER_CORE = {
             // Запишем ошибку
             debagList.push("97");
           }
-
+          if (!response.hasOwnProperty("shipperName")){
+            response.shipperName = "Яндекс.Маркет";
+          }
           // добавление текстового узла для ресурса
           banner_list_header_source_after.innerHTML = response.shipperName;
           // добавление ссылки на яндекс маркет
           banner_list_header_source_after.href = "https://market.yandex.ru";
-
 
           // объявляем html узел для опции селектора по умолчанию
           var banner_list_header_selector_selector_option = document.createElement("option");
@@ -2000,11 +2047,11 @@ var PRESSTAKE_BANNER_CORE = {
           banner_list_header_selector_selector_option.setAttribute("selected", "");
 
           // Если нет гео позиции по умолчанию и объявлен листинг для записи ошибок то
-          if (!response.geo.name && debagList){
+          if (!response.hasOwnProperty("geo") && debagList){
             // Запишем ошибку
             debagList.push("98");
           }
-          if (!response.geo.name){
+          if (!response.hasOwnProperty("geo")){
             response.geo = {
               name : "Москва"
             };
@@ -2376,6 +2423,78 @@ var PRESSTAKE_BANNER_CORE = {
         var dom = document.getElementById("pt-banner-scroll");
         dom.scrollLeft += event.deltaY;
       },
+      bannerListTouchStartEvent : function(event){
+        event = event || window.event;
+        var dom = document.getElementById("pt-banner-scroll");
+        if (!dom.hasOwnProperty("scrollProp")){
+          dom.scrollProp = {
+            x : event.targetTouches[0].clientX
+          };
+        } else {
+          dom.scrollProp.x = event.targetTouches[0].clientX;
+        }
+      },
+      bannerListTouchMoveEvent : function(event){
+        event = event || window.event;
+        var dom = document.getElementById("pt-banner-scroll"),
+            scroll = event.targetTouches[0].clientX - dom.scrollProp.x;
+        dom.scrollLeft += -1 * scroll;
+        dom.scrollProp.x = event.targetTouches[0].clientX;
+        event.preventDefault ? event.preventDefault() : (event.returnValue=false);
+      },
+      bannerListMouseDownEvent : function(event){
+        event = event || window.event;
+        var dom = document.getElementById("pt-banner-scroll");
+        if (!dom.hasOwnProperty("scrollProp")){
+          dom.scrollProp = {
+            x : event.clientX,
+            mousedown : true
+          };
+        } else {
+          dom.scrollProp.x = event.clientX;
+          dom.scrollProp.mousedown = true;
+        }
+        event.preventDefault ? event.preventDefault() : (event.returnValue=false);
+      },
+      documentMouseMoveEvent : function(event){
+        event = event || window.event;
+        var dom = document.getElementById("pt-banner-scroll");
+        if (dom.hasOwnProperty("scrollProp")){
+          if (dom.scrollProp.hasOwnProperty("mousedown")){
+            if (dom.scrollProp.mousedown){
+              var scroll = event.clientX - dom.scrollProp.x;
+              dom.scrollLeft += -1 * scroll * 2;
+              dom.scrollProp.x = event.clientX;    
+            }
+          }
+        }
+        event.preventDefault ? event.preventDefault() : (event.returnValue=false);
+      },
+      documentMouseUpEvent : function(event){
+        event = event || window.event;
+        var dom = document.getElementById("pt-banner-scroll");
+        if (dom.hasOwnProperty("scrollProp")){
+          dom.scrollProp.mousedown = false;
+        }
+      },
+      addBannerListMouseDownEvent : function(action){
+        var dom = document.getElementById("pt-banner-scroll");
+        dom.addEventListener("mousedown", action, true);
+      },
+      addDocumentMouseUpEvent : function(action){
+        document.addEventListener("mouseup", action, true);
+      },
+      addDocumentMouseMoveEvent : function(action){
+        document.addEventListener("mousemove", action, true);
+      },
+      addBannerListTouchStartEvent : function(action){
+        var dom = document.getElementById("pt-banner-scroll");
+        dom.addEventListener("touchstart", action, true);
+      },
+      addBannerListTouchMoveEvent : function(action){
+        var dom = document.getElementById("pt-banner-scroll");
+        dom.addEventListener("touchmove", action, true);
+      },
       // Функция для добавления события на скролл
       // Функция принимает событие
       addWindowScrollEvent : function(action){
@@ -2472,6 +2591,24 @@ var PRESSTAKE_BANNER_CORE = {
       addBannerListScrollEvent : function (action){
         var dom = document.getElementById("pt-banner-scroll");
         dom.addEventListener("wheel", action);
+      },
+      removeBannerListTouchStartEvent : function(action){
+        var dom = document.getElementById("pt-banner-scroll");
+        dom.removeEventListener("touchstart", action);
+      },
+      removeBannerListTouchMoveEvent : function(action){
+        var dom = document.getElementById("pt-banner-scroll");
+        dom.removeEventListener("touchmove", action);
+      },
+      removeBannerListMouseDownEvenet : function(action){
+        var dom = document.getElementById("pt-banner-scroll");
+        dom.removeEventListener("mousedown", action);
+      },
+      removeDocumentMouseUpEvent : function (action){
+        document.removeEventListener("mouseup", action);
+      },
+      removeDocumentMouseMoveEvent : function(action){
+        document.removeEventListener("mousemove", action);
       },
       removeBannerListScrollEvent : function(action){
         var dom = document.getElementById("pt-banner-scroll");
@@ -2574,6 +2711,13 @@ var PRESSTAKE_BANNER_CORE = {
   }
 };
 
-// window.addEventListener("DOMContentLoaded", function(){
-//   PRESSTAKE_BANNER_CORE.init();
-// });
+PRESSTAKE_BANNER_CORE.init({
+  URL : {
+    TARGET_URL : window.location.host + window.location.pathname,
+    PASRSE_URL : "requests/parse",
+    APPS_URL : "requests/gadgets",
+    STAT_URL : "requests/stat",
+    TRACKING_URL : "requests/track",
+    CSS_URL : "css/style.css"
+  }
+});

@@ -2438,7 +2438,7 @@ var PRESSTAKE_BANNER_CORE = {
         event = event || window.event;
         var dom = document.getElementById("pt-banner-scroll"),
             scroll = event.targetTouches[0].clientX - dom.scrollProp.x;
-        dom.scrollLeft += -1 * scroll;
+        dom.scrollLeft += -1 * scroll * 2;
         dom.scrollProp.x = event.targetTouches[0].clientX;
         event.preventDefault ? event.preventDefault() : (event.returnValue=false);
       },

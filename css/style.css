@@ -28,6 +28,9 @@
   bottom: 0;
   width: 700px;
   height: 162px;
+  -webkit-transform-origin: left bottom;
+      -ms-transform-origin: left bottom;
+          transform-origin: left bottom;
 }
 .pt-banner a {
   text-decoration: none;

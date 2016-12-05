@@ -2334,8 +2334,9 @@ var PRESSTAKE_BANNER_CORE = {
           // Запишем ошибку
           debagList.push("111");
         }
-        banner.style.zoom = config.zoom;
+        //banner.style.zoom = config.zoom;
         banner.style.left = config.bannerLeft + "%";
+        banner.style.transform = "scale("+config.zoom+")";
       },
       // Функция для открытия листинга офферов при клике на главную область баннера
       // Функция принимает событие

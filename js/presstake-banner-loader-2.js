@@ -2434,7 +2434,15 @@ var PRESSTAKE_BANNER_CORE = {
         event = event || window.event;
         var dom = document.getElementById("pt-banner-scroll"),
             scroll = event.targetTouches[0].clientX - dom.scrollProp.x;
-        dom.scrollLeft += -1 * scroll * 2;
+        scroll = -1 * scroll * 2;
+        if (Math.abs(scroll) < 5) {
+          if (scroll < 0){
+            scroll = -20;
+          } else {
+            scroll = 20;
+          }
+        }
+        dom.scrollLeft += scroll;
         dom.scrollProp.x = event.targetTouches[0].clientX;
         event.preventDefault ? event.preventDefault() : (event.returnValue=false);
       },

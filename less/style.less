@@ -650,6 +650,25 @@
     }
   }
 }
+@media all and (orientation: landscape){
+  .pt-banner {
+    width: 100%;
+    .pt-banner-main{
+      width: 700px;
+      right: 0;
+      left: 0;
+      margin: auto;
+    }
+    &.pt-banner-open{
+      .pt-banner-main{
+        display: none;
+      }
+      .pt-banner-list-wrapper{
+        bottom: 0;
+      }
+    }
+  }
+}
 @keyframes arrow-jump {
   0% { top: -21px; }
   50% { top: -17px; }

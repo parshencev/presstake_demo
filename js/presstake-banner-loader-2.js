@@ -1384,8 +1384,12 @@ var PRESSTAKE_BANNER_CORE = {
           // Запишем ошибку
           debagList.push("79");
         }
-        // Записываем зум для баннера в конфигурации
-        config.zoom = width / 700;
+        if (config.deviceOrientation == "landscape"){
+          config.zoom = (width / 3) / 700;
+        } else {
+          // Записываем зум для баннера в конфигурации
+          config.zoom = width / 700;
+        }
       },
       // Функция для получения левого отступа баннера
       getBannerLeft : function(){
@@ -2330,21 +2334,7 @@ var PRESSTAKE_BANNER_CORE = {
           // Запишем ошибку
           debagList.push("111");
         }
-        if (windowWidth > 700 && config.deviceOrientation == "landscape"){
-          banner.style.zoom = .7;
-          banner.style.left = 0;
-          banner.classList.add("pt-banner-center"); 
-        } else {
-          banner.style.zoom = config.zoom;
-          banner.style.left = config.bannerLeft + "%";
-          banner.classList.remove("pt-banner-center");
-        }
-        /*// Добавление зума в стили баннера из конфигураций
         banner.style.zoom = config.zoom;
-        // Добавление отступа слева в стили баннера из конфигураций + %
-        banner.style.left = config.bannerLeft + "%";
-        // Добавление отступа снизу в стили баннера из конфигураций + %
-        banner.style.bottom = config.bannerBottom + "%";*/
       },
       // Функция для открытия листинга офферов при клике на главную область баннера
       // Функция принимает событие

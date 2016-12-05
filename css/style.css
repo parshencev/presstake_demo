@@ -667,6 +667,23 @@
       -ms-transform: rotate(180deg);
           transform: rotate(180deg);
 }
+@media all and (orientation: landscape) {
+  .pt-banner {
+    width: 100%;
+  }
+  .pt-banner .pt-banner-main {
+    width: 700px;
+    right: 0;
+    left: 0;
+    margin: auto;
+  }
+  .pt-banner.pt-banner-open .pt-banner-main {
+    display: none;
+  }
+  .pt-banner.pt-banner-open .pt-banner-list-wrapper {
+    bottom: 0;
+  }
+}
 @-webkit-keyframes arrow-jump {
   0% {
     top: -21px;

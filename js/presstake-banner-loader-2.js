@@ -2337,6 +2337,10 @@ var PRESSTAKE_BANNER_CORE = {
         //banner.style.zoom = config.zoom;
         banner.style.left = config.bannerLeft + "%";
         banner.style.transform = "scale("+config.zoom+")";
+        banner.style.webkitTransform = "scale("+config.zoom+")";
+        banner.style.mozTransform = "scale("+config.zoom+")";
+        banner.style.msTransform = "scale("+config.zoom+")";
+        banner.style.oTransform = "scale("+config.zoom+")";
       },
       // Функция для открытия листинга офферов при клике на главную область баннера
       // Функция принимает событие

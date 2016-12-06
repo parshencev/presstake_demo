@@ -2467,8 +2467,18 @@ var PRESSTAKE_BANNER_CORE = {
           if (dom.scrollProp.hasOwnProperty("mousedown")){
             if (dom.scrollProp.mousedown){
               var scroll = event.clientX - dom.scrollProp.x;
-              dom.scrollLeft += -1 * scroll * 2;
-              dom.scrollProp.x = event.clientX;    
+              if (Math.abs(scroll) > 0){
+                scroll = -1 * scroll * 2;
+                if (Math.abs(scroll) < 5) {
+                  if (Math.sign(scroll) < 0){
+                    scroll = -20;
+                  } else {
+                    scroll = 20;
+                  }
+                }
+              }
+              dom.scrollLeft += scroll;
+              dom.scrollProp.x = event.clientX;   
             }
           }
         }

@@ -35,6 +35,8 @@ var PRESSTAKE_BANNER_CORE = {
     status : {
       // статус "есть данные, загружаем баннер"
       STATUS_OK : 1,
+      STATUS_OK_2 : 200,
+      STATUS_OK_3 : "success",
       // статус "страница обрабатывается"
       STATUS_DATA_LOADING : 2,
       // статус "Нет данных"
@@ -99,6 +101,7 @@ var PRESSTAKE_BANNER_CORE = {
         view_controller.addWindowScrollEvent();
         view_controller.addBannerListTouchStartEvent();
         view_controller.addBannerListTouchMoveEvent();
+        view_controller.addBannerListTouchEndEvent();
         view_controller.addBannerListMouseDownEvent();
         view_controller.addDocumentMouseMoveEvent();
         view_controller.addDocumentMouseUpEvent();
@@ -326,6 +329,10 @@ var PRESSTAKE_BANNER_CORE = {
         var view_model = PRESSTAKE_BANNER_CORE.MODELS.VIEW_MODEL;
         view_model.addBannerListTouchMoveEvent(view_model.bannerListTouchMoveEvent);
       },
+      addBannerListTouchEndEvent : function(){
+        var view_model = PRESSTAKE_BANNER_CORE.MODELS.VIEW_MODEL;
+        view_model.addBannerListTouchEndEvent(view_model.bannerListTouchEndEvent);
+      },
       addBannerListMouseDownEvent : function(){
         var view_model = PRESSTAKE_BANNER_CORE.MODELS.VIEW_MODEL;
         view_model.addBannerListMouseDownEvent(view_model.bannerListMouseDownEvent);
@@ -345,6 +352,10 @@ var PRESSTAKE_BANNER_CORE = {
       removeBannerListTouchStartEvent : function(){
         var view_model = PRESSTAKE_BANNER_CORE.MODELS.VIEW_MODEL;
         view_model.removeBannerListTouchStartEvent(view_model.bannerListTouchStartEvent);
+      },
+      removeBannerListTouchEndEvent : function(){
+        var view_model = PRESSTAKE_BANNER_CORE.MODELS.VIEW_MODEL;
+        view_model.removeBannerListTouchEndEvent(view_model.bannerListTouchEndEvent);
       },
       removeBannerListMouseDownEvenet : function(){
         var view_model = PRESSTAKE_BANNER_CORE.MODELS.VIEW_MODEL;
@@ -1141,7 +1152,7 @@ var PRESSTAKE_BANNER_CORE = {
                 response.status = response.requestStatus;
               }
               // Если есть то проверяем положительно ли оно
-              if (response.status == config.status.STATUS_OK) {
+              if (response.status == config.status.STATUS_OK || response.status == config.status.STATUS_OK_2 || response.status == config.status.STATUS_OK_3) {
                 // Если положительно то вызываем метод успешного соединения с ответом сервера и идентификатором интервала
                 callback(response, intervalId);
                 // Если не положительно и если есть метод не успешного соединения то
@@ -2428,6 +2439,11 @@ var PRESSTAKE_BANNER_CORE = {
           };
         } else {
           dom.scrollProp.x = event.targetTouches[0].clientX;
+          if (dom.scrollProp.hasOwnProperty("intervalId")){
+            if (dom.scrollProp.intervalId){
+              clearInterval(dom.scrollProp.intervalId);
+            }
+          }
         }
       },
       bannerListTouchMoveEvent : function(event){
@@ -2442,9 +2458,31 @@ var PRESSTAKE_BANNER_CORE = {
             scroll = 20;
           }
         }
+        dom.scrollProp.dx = scroll;
         dom.scrollLeft += scroll;
         dom.scrollProp.x = event.targetTouches[0].clientX;
         event.preventDefault ? event.preventDefault() : (event.returnValue=false);
+      },
+      bannerListTouchEndEvent : function(event){
+        event = event || window.event;
+        var dom = document.getElementById("pt-banner-scroll");
+        if (dom.hasOwnProperty("scrollProp")){
+          if (Math.abs(dom.scrollProp.dx) < 5){
+            dom.scrollProp.dx = 0;
+          }
+          dom.scrollProp.intervalId = setInterval(function(){
+            if (!this.hasOwnProperty("tick")){
+              this.tick = 0;
+            }
+            if (this.tick >= 200){
+              clearInterval(dom.scrollProp.intervalId);
+            } else {
+              var scroll = ((dom.scrollProp.dx * 50) / 200);
+              dom.scrollLeft += Math.ceil(scroll);
+              this.tick++;   
+            }
+          }.bind(new Object),1);
+        }
       },
       bannerListMouseDownEvent : function(event){
         event = event || window.event;
@@ -2457,6 +2495,11 @@ var PRESSTAKE_BANNER_CORE = {
         } else {
           dom.scrollProp.x = event.clientX;
           dom.scrollProp.mousedown = true;
+          if (dom.scrollProp.hasOwnProperty("intervalId")){
+            if (dom.scrollProp.intervalId){
+              clearInterval(dom.scrollProp.intervalId);
+            }
+          }
         }
         event.preventDefault ? event.preventDefault() : (event.returnValue=false);
       },
@@ -2471,12 +2514,13 @@ var PRESSTAKE_BANNER_CORE = {
                 scroll = -1 * scroll * 2;
                 if (Math.abs(scroll) < 5) {
                   if (Math.sign(scroll) < 0){
-                    scroll = -20;
+                    scroll = -10;
                   } else {
-                    scroll = 20;
+                    scroll = 10;
                   }
                 }
               }
+              dom.scrollProp.dx = scroll;
               dom.scrollLeft += scroll;
               dom.scrollProp.x = event.clientX;   
             }
@@ -2489,6 +2533,21 @@ var PRESSTAKE_BANNER_CORE = {
         var dom = document.getElementById("pt-banner-scroll");
         if (dom.hasOwnProperty("scrollProp")){
           dom.scrollProp.mousedown = false;
+          if (Math.abs(dom.scrollProp.dx) < 5){
+            dom.scrollProp.dx = 0;
+          }
+          dom.scrollProp.intervalId = setInterval(function(){
+            if (!this.hasOwnProperty("tick")){
+              this.tick = 0;
+            }
+            if (this.tick >= 200){
+              clearInterval(dom.scrollProp.intervalId);
+            } else {
+              var scroll = ((dom.scrollProp.dx * 50) / 200);
+              dom.scrollLeft += Math.ceil(scroll);
+              this.tick++;   
+            }
+          }.bind(new Object),1);
         }
       },
       addBannerListMouseDownEvent : function(action){
@@ -2508,6 +2567,10 @@ var PRESSTAKE_BANNER_CORE = {
       addBannerListTouchMoveEvent : function(action){
         var dom = document.getElementById("pt-banner-scroll");
         dom.addEventListener("touchmove", action, true);
+      },
+      addBannerListTouchEndEvent : function(action){
+        var dom = document.getElementById("pt-banner-scroll");
+        dom.addEventListener("touchend", action, true);
       },
       // Функция для добавления события на скролл
       // Функция принимает событие
@@ -2613,6 +2676,10 @@ var PRESSTAKE_BANNER_CORE = {
       removeBannerListTouchMoveEvent : function(action){
         var dom = document.getElementById("pt-banner-scroll");
         dom.removeEventListener("touchmove", action);
+      },
+      removeBannerListTouchEndEvent : function(action){
+        var dom = document.getElementById("pt-banner-scroll");
+        dom.removeEventListener("touchend", action);
       },
       removeBannerListMouseDownEvenet : function(action){
         var dom = document.getElementById("pt-banner-scroll");

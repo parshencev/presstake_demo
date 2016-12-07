@@ -2467,7 +2467,7 @@ var PRESSTAKE_BANNER_CORE = {
         event = event || window.event;
         var dom = document.getElementById("pt-banner-scroll");
         if (dom.hasOwnProperty("scrollProp")){
-          if (Math.abs(dom.scrollProp.dx) < 5){
+          if (Math.abs(dom.scrollProp.dx) < 7){
             dom.scrollProp.dx = 0;
           }
           dom.scrollProp.intervalId = setInterval(function(){

@@ -2445,7 +2445,6 @@ var PRESSTAKE_BANNER_CORE = {
             }
           }
         }
-        event.preventDefault ? event.preventDefault() : (event.returnValue=false);
       },
       bannerListTouchMoveEvent : function(event){
         event = event || window.event;

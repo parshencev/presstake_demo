@@ -2450,12 +2450,12 @@ var PRESSTAKE_BANNER_CORE = {
         event = event || window.event;
         var dom = document.getElementById("pt-banner-scroll"),
             scroll = event.targetTouches[0].clientX - dom.scrollProp.x;
-        scroll = -1 * scroll * 2;
+        scroll = -1 * scroll;
         if (Math.abs(scroll) < 5) {
           if (scroll < 0){
-            scroll = -20;
+            scroll = -10;
           } else {
-            scroll = 20;
+            scroll = 10;
           }
         }
         dom.scrollProp.dx = scroll;
@@ -2467,7 +2467,7 @@ var PRESSTAKE_BANNER_CORE = {
         event = event || window.event;
         var dom = document.getElementById("pt-banner-scroll");
         if (dom.hasOwnProperty("scrollProp")){
-          if (Math.abs(dom.scrollProp.dx) < 7){
+          if (Math.abs(dom.scrollProp.dx) < 7 || Math.abs(dom.scrollProp.dx) == 10){
             dom.scrollProp.dx = 0;
           }
           dom.scrollProp.intervalId = setInterval(function(){

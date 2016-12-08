@@ -2446,7 +2446,6 @@ var PRESSTAKE_BANNER_CORE = {
           }
         }
         event.preventDefault ? event.preventDefault() : (event.returnValue=false);
-        return false;
       },
       bannerListTouchMoveEvent : function(event){
         event = event || window.event;
@@ -2464,7 +2463,6 @@ var PRESSTAKE_BANNER_CORE = {
         dom.scrollLeft += scroll;
         dom.scrollProp.x = event.targetTouches[0].clientX;
         event.preventDefault ? event.preventDefault() : (event.returnValue=false);
-        return false;
       },
       bannerListTouchEndEvent : function(event){
         event = event || window.event;
@@ -2505,7 +2503,6 @@ var PRESSTAKE_BANNER_CORE = {
           }
         }
         event.preventDefault ? event.preventDefault() : (event.returnValue=false);
-        return false;
       },
       documentMouseMoveEvent : function(event){
         event = event || window.event;
@@ -2531,7 +2528,6 @@ var PRESSTAKE_BANNER_CORE = {
           }
         }
         event.preventDefault ? event.preventDefault() : (event.returnValue=false);
-        return false;
       },
       documentMouseUpEvent : function(event){
         event = event || window.event;
